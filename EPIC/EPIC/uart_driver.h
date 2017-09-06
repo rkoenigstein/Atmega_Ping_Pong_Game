@@ -1,4 +1,8 @@
 //UART driver
+
+#ifndef UART_driver
+#define UART_driver
+
 #define BAUD 9600
 #define FOSC 4915200
 #define BAUDRATE FOSC/16/BAUD-1
@@ -18,3 +22,16 @@ unsigned char uart_getc(void);
 void uart_putstring(unsigned const char* name);
 
 //TODO add read string function
+
+
+
+
+
+
+
+//TEST FUNCTIONS
+void TEST_reciver_transmitter_string(void);
+
+
+
+#endif

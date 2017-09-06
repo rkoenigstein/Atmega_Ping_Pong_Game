@@ -28,6 +28,7 @@ void uart_init(unsigned int ubrr)
 	//disable parity mode
 	UCSR0C &= (0<<UPM00);
 	UCSR0C &= (0<<UPM10);
+	fdevopen(uart_putc, uart_getc);
 }
 
 //send data to RS232
@@ -63,4 +64,34 @@ void uart_putstring(unsigned const char* name)
 		else
 			uart_putc(name[i]);
 	}
+}
+
+
+
+
+
+
+
+
+
+//TEST FUNCTIONS
+
+void TEST_reciver_transmitter_string(void)
+{
+ uart_init(BAUDRATE);
+ 
+ unsigned char c;
+ unsigned const char* hello_string = "Hello World";
+ 
+ uart_putstring(hello_string);
+ 
+ printf("Please enter something:");
+ 
+ while(1)
+ {
+	 c = uart_getc();
+	 uart_putc(c);
+	 _delay_ms(100);
+
+ }
 }

@@ -10,25 +10,14 @@
 #include <util/delay.h>
 #include <avr/io.h>
 #include "uart_driver.h"
+#include "sram.h"
+
 
 int main(void)
 {
-    uart_init(BAUDRATE);
-    
-    unsigned char c;
-    unsigned const char* hello_string = "Hello World";
-	
-	uart_putstring(hello_string);
-	
-	fdevopen(uart_putc, uart_getc);
-	
-	printf("Please enter something:");
-    
-	while(1)
-    {
-	    c = uart_getc();
-	    uart_putc(c);
-	    _delay_ms(100);
-
-    }
+	uart_init(BAUDRATE);
+	sram_init();
+	TEST_SRAM_test();
+   //TEST_write_adress();
+   return 25;
 }
