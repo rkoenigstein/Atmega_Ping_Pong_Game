@@ -54,7 +54,7 @@ unsigned char uart_getc(void)
 
 //send string to RS232
 //TODO WITHOUT MAX_STRING -> pointer 
-void uart_putstring(unsigned const char* name)
+void uart_putstring(unsigned char* name)
 {
 	int i;
 	for(i = 0; i<MAX_STRING; i++)
@@ -65,14 +65,6 @@ void uart_putstring(unsigned const char* name)
 			uart_putc(name[i]);
 	}
 }
-
-
-
-
-
-
-
-
 
 //TEST FUNCTIONS
 

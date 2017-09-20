@@ -19,7 +19,7 @@ void uart_putc(unsigned char c);
 unsigned char uart_getc(void);
 
 //send string to RS232
-void uart_putstring(unsigned const char* name);
+void uart_putstring(unsigned char* name);
 
 //TODO add read string function
 

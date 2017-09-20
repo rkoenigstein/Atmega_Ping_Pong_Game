@@ -1,7 +1,4 @@
 //SRAM funcions
-#define F_CPU 4915200 // Clock speed
-#include <util/delay.h>
-#include <avr/io.h>
 #include "sram.h"
 
 void sram_init(void)
@@ -19,7 +16,6 @@ void sram_init(void)
 void TEST_write_adress (void)
 {
 	int * a=0x0fff;
-	sram_init();
 	while(1)
 	{
 		a=0x0fff;
@@ -30,6 +26,40 @@ void TEST_write_adress (void)
 		_delay_ms(1000);		
 	}
 
+}
+
+void TEST_GAL(void)
+{
+	volatile int *a=0;
+	int b = -1;
+	while(1)
+	{
+		uart_putstring("TEST GAL PRESS ENTER \n");
+		while(b == -1){
+			a=0x1800; // put the respective memory address which should be tested, here
+			//ADC: active low chip select
+			//OLED: active low chip select
+			//SRAM: active high chip select
+			*a = 0xf;
+		}
+	}
+}
+
+void TEST_ADC(void)
+{
+	volatile int *a=0;
+	int b = -1;
+	while(1)
+	{
+		uart_putstring("TEST GAL PRESS ENTER \n");
+		while(b == -1){
+			a=0x1400; // put the respective memory address which should be tested, here
+			//ADC: active low chip select
+			//OLED: active low chip select
+			//SRAM: active high chip select
+			printf((char*)a);
+		}
+	}	
 }
 
 //PROFESSOR TEST

@@ -37,7 +37,11 @@ SUBDIRS :=
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
+../adc.c \
 ../EPIC.c \
+../joystick_driver.c \
+../oled_driver.c \
+../sram.c \
 ../uart_driver.c
 
 
@@ -48,19 +52,35 @@ ASM_SRCS +=
 
 
 OBJS +=  \
+adc.o \
 EPIC.o \
+joystick_driver.o \
+oled_driver.o \
+sram.o \
 uart_driver.o
 
 OBJS_AS_ARGS +=  \
+adc.o \
 EPIC.o \
+joystick_driver.o \
+oled_driver.o \
+sram.o \
 uart_driver.o
 
 C_DEPS +=  \
+adc.d \
 EPIC.d \
+joystick_driver.d \
+oled_driver.d \
+sram.d \
 uart_driver.d
 
 C_DEPS_AS_ARGS +=  \
+adc.d \
 EPIC.d \
+joystick_driver.d \
+oled_driver.d \
+sram.d \
 uart_driver.d
 
 OUTPUT_FILE_PATH +=EPIC.elf
@@ -77,6 +97,14 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
+
+
+
+
+
+
+
+
 
 
 
