@@ -1,5 +1,6 @@
 //SRAM funcions
 #include "sram.h"
+#include "uart_driver.h"
 
 void sram_init(void)
 {

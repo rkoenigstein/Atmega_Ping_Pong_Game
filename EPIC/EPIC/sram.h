@@ -5,7 +5,6 @@
 #define F_CPU 4915200 // Clock speed
 #include <util/delay.h>
 #include <avr/io.h>
-#include "uart_driver.h"
 
 #define LE 1 //define latch enable pin
 //Initialize SRAM memory

@@ -1,8 +1,7 @@
 #include "oled_driver.h"
 #include "fonts.h"
-
-#define N 128 // display columns
-#define M 8 // display pages for lines (8x8)
+#include "uart_driver.h"
+#include <stdbool.h>
 
 volatile uint8_t* oled_buffer=0x1800;
 
@@ -29,214 +28,183 @@ void oled_init()
 	oled_write_command(0x00);
 	oled_write_command(0xa4);        //out  follows  RAM  content
 	oled_write_command(0xa6);        //set  normal  display
-	oled_write_command(0xaf);        //  display  on
+	oled_write_command(0xaf);        //  display  on	
+	
+	//set display offset
+	oled_write_command(0xd3);
+	oled_write_command(1);
+	//set display start line
+	oled_write_command(0x40);
+	//set page start address
+	oled_write_command(0xb0);
 	//set the lower start column address
-	oled_write_command(0x0F);
+	oled_write_command(0);
 	//set the upper start column address
-	oled_write_command(0x1F);
-	
-	
-	/*oled_write_command(0xd3);		// set display offset to 0
-	oled_write_command(0x00);
-	oled_write_command(0x40);		//set display start line to 0
-	oled_goto_column(0,128);*/
-	oled_clear();
+	oled_write_command(127);
 	
 	clear_buffer();
-	
+	print_buffer();	
+}
+
+void oled_reset()
+{
+	oled_init();
+}
+
+void oled_clear()
+{
+	clear_buffer();
+	print_buffer();
+}
+
+void print_buffer(void)
+{
+	oled_set_page(0);
+	for(uint8_t i = 0; i < M; i++)
+	{
+		for(uint8_t j = 0; j < N; j++)
+		{
+			oled_print(oled_buffer[i*128+j]);
+		}
+		i < M ? oled_set_page(i+1) : oled_set_page(0);
+	}
+}
+
+void oled_print(uint8_t data)
+{
+	volatile uint8_t* oled = 0x1200;
+	*oled = data;
 }
 
 void clear_buffer(void)
 {
-	int result = 0;
 	for(int i = 0; i < M; i++)
 		for(int j = 0; j < N; j++)
 		{
-			result = i << 7;
-			*(oled_buffer+result+j) = 0x00;
+			oled_buffer[i*128+j] = 0x00;
 		}
 }
 
 void ones_buffer(void)
 {
-	int result=0;
 	for(int i = 0; i < M; i++)
 		for(int j = 0; j < N; j++)
-		{
-			result = i<<7;	
-			*(oled_buffer+result+j)=0xFF;
+		{	
+			oled_buffer[i*128+j]=0xFF;
 		}
-		
 }
 
-void print_buffer(void)
-{
-	int result = 0;
-	for(int i = 0; i < M; i++)
-	{
-		for(int j = 0; j < N; j++)
-		{
-			result = i<<7;
-			oled_print(*(oled_buffer+result+j));
-			
-			//printf("%d", *(oled_buffer+result+j));
-		}
-		oled_set_page(i);
-		//printf("\n");
-	}
-}
-//TODO Ask about Set lower column Sart adress for page adressing
-//AND  Ask about Set Higher column Sart adress for page adressing
-void oled_set_page(int i)
+void oled_set_page(uint8_t page)
 {
 	//set page start address
-	//oled_write_command(0x22);
-	//oled_write_command(i);
-	//oled_write_command(0x08);
+	oled_write_command(0xb0 | page);
 	//set the lower start column address
-	oled_write_command(i&(0b111));
+	oled_write_command(0);
 	//set the upper start column address
-	//uint8_t res = i+16;
-	oled_write_command(1i);
-}
-
-void oled_reset()
-{
-
-}
-
-void oled_home()
-{
-	
-}
-
-void oled_goto_line(int line)
-{
-	if(line > 0 && line < 65)
-	{
-		oled_write_command(0x40 + line - 1);
-	}
-	else
-	{
-		printf("Line parameter must be in between 1 and 64\n");
-	}
+	oled_write_command(127);
 }
 
 void oled_write_command(uint8_t command)
 {
-	volatile uint8_t* _command = 0x1001;
+	volatile uint8_t* _command = 0x1000;
 	*_command = command;
 }
 
-void oled_goto_column(int column, int length)
+void print_string_to_buffer(char* word, uint8_t length, position pos)
 {
-	if(column > 0 && column < 129)
-	{
-		oled_write_command(0x21);
-		oled_write_command(column-1);
-		oled_write_command(column+length-1);
-	}
-	else
-	{
-		printf("Column parameter must be in between 1 and 128\n");
-	}
+	uint8_t mystring[128*length];
+	convertStringToFont(word, length, mystring);
+	memcpy(oled_buffer + (pos.page<<7)+pos.column, mystring, 8*length);
 }
 
-void oled_clear_line(int line)
+void convertStringToFont(char* myword, uint8_t mylength, uint8_t mystring[])
 {
-	//oled_goto_line(line);
-	//oled_goto_column(1, 128);
-	for(int i = 1; i < 128*64+1; i++)
+	for(int j = 0; j < mylength; j++)
 	{
-		oled_print(0);
+		for(int i = 0; i < 8; i++)
+		{
+			mystring[j*8+i] = (PGM_P)pgm_read_byte(&font8[myword[j]-32][i]);			
+		}
+		//printf("%d~\n", j);
 	}
 }
-
-void oled_clear()
-{
-	oled_goto_line(1);
-	oled_goto_column(1, 128);
-	for(int i = 1; i < 128*64+1; i++)
-	{
-		oled_print(0);
-	}
-}
-
-void oled_pos(int line, int column)
-{
-	oled_goto_line(line);
-	oled_goto_column(column, 128);
-}
-
-void oled_print(char letter)
-{
-	volatile uint8_t* oled = 0x1200;
-	*oled = letter;
-}
-
-void oled_print_letter(char c)
-{
-	c -=32;
-	for(int i = 0; i < 8; i++)
-	{
-		oled_print((PGM_P)pgm_read_byte(&font8[c][i]));
-	}	
-}
-
-
 
 void oled_test()
 {
-	//oled_pos(30,40);
-	//oled_goto_column(1,128);
-	/**int i = 0;
 	while(1)
 	{
-		for(int j = 1; j < 129;j++)
-		{
-			oled_print(0);
-			_delay_ms(50);
-			oled_print(0xFF);
-		}
-		if(i==65)i=1;
-	}*/
-	
-	while(1)
-	{
+		ones_buffer();
+		print_buffer();
+		_delay_ms(2000);
 		clear_buffer();
 		print_buffer();
 		_delay_ms(2000);
-		ones_buffer();
+		position pos = { .page=1, .column = 5};
+		print_string_to_buffer("hello_world", 11, pos);
 		print_buffer();
-		//oled_goto_line(0);
-		/*for(int i = 0; i < 8; i++)
-		{
-			oled_print(font8[3][i]);
-		}*/
-		//char ch = '#';
-		//oled_print_letter(ch);
-		/*oled_print(font8[3][0]);
-		oled_print(font8[3][1]);
-		oled_print(font8[3][2]);
-		oled_print(font8[3][3]);
-		oled_print(font8[3][4]);
-		oled_print(font8[3][5]);
-		oled_print(font8[3][6]);
-		oled_print(font8[3][7]);*/
-		/*oled_print(0b00011000);
-		oled_print(0b00011000);
-		oled_print(0b01111110);
-		oled_print(0b00111100);
-		oled_print(0b00011000);
-		oled_print(0b00011000);
-		oled_print(0b00011000);
-		oled_print(0b01111110);
-		oled_print(0b00111100);
-		oled_print(0b00011000);
-		oled_print(0);
-		oled_print(0);
-		oled_print(0);*/
-		
 		_delay_ms(2000);
+	}
+}
+
+void printBlobs(void)
+{
+	
+}
+
+void printGreetings(void)
+{
+	int counter = 0;
+	while(1)
+	{
+		position pos = {.page = 4, .column = counter++};
+		print_string_to_buffer("I want to greet my mom, because she is soooo nice. I want to greet my grandma, because she is soooo pretty. I want to say hello to my teacher, because he is soooo bright. I want to say hello to my friend Peter, because he is soooo friendly. ", 235, pos);
+		_delay_ms(50);
+	}
+}
+
+void printMenu(menu* menu_entries)
+{
+	printf("Menu num submenus: %d\n", menu_entries->num_of_submenus);
+	for(int i = 0; i < menu_entries->num_of_submenus; i++)
+	{
+		position pos = { .page = i, .column = 2 };
+		printf("Menu title: %s\n", menu_entries->menu_title);
+		print_string_to_buffer(menu_entries->submenu[i]->menu_title, menu_entries->title_length, pos);
+		print_buffer();
+	}
+	
+}
+
+void sayHello(void)
+{
+	clear_buffer();
+	print_buffer();
+	_delay_ms(2000);
+	position pos = { .page = 0, .column =0 };
+	print_string_to_buffer(" .------------. ", 16, pos);
+	pos.page++;
+	print_string_to_buffer(" | Ping Pong! | ", 16, pos);
+	pos.page++;
+	print_string_to_buffer(" `------------' ", 16, pos);
+	pos.page++;
+	print_string_to_buffer("        ^       ", 16, pos);
+	pos.page++;
+	print_string_to_buffer("        |  (\\_/) ", 16, pos);
+	pos.page++;
+	print_string_to_buffer("        |__(O.o) ", 16, pos);
+	pos.page++;
+	print_string_to_buffer("           (> <) ", 16, pos);
+	print_buffer();	
+}
+
+void print_buffer_to_serial(void)
+{
+	for(int i = 0; i < M; i++)
+	{
+		for(int j = 0; j < N; j++)
+		{
+			printf("%d ", oled_buffer[i*N+j]);
+		}
+		printf("\n");
 	}
 }

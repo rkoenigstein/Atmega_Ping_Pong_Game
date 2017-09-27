@@ -1,12 +1,15 @@
 #ifndef OLED_DRIVER
 #define OLED_DRIVER
 
-#include "uart_driver.h"
+#include "menu.h"
 #include <stdlib.h>
-#include <stdbool.h>
+#include <string.h>
 
 
 #define F_CPU 4915200 // Clock speed
+#define MAX_STRING_LENGTH 50
+#define N 128 // display columns
+#define M 8 // display pages for lines (8x8)
 
 #include <util/delay.h>
 
@@ -16,22 +19,60 @@
 
 //__attribute__((section (".oled_buf")));
 
-void clear_buffer(void);
+typedef struct position{
+	uint8_t page;   //0-7
+	uint8_t column; //0-127
+	} position;
+
+//initialize OLED display for page addressing mode starting in the top left corner
+void oled_init();
+
+//just a function call of oled_init()
+void oled_reset();
+
+//clears buffer and prints buffer to the display
+void oled_clear();
+
+//prints buffer to OLED display
 void print_buffer(void);
+
+//prints an 8bit column to the current OLED position
+void oled_print(uint8_t data);
+
+//clears buffer (set all buffer entries to 0
+void clear_buffer(void);
+
+//set all buffer entries to high
 void ones_buffer(void);
 
-void oled_init();
-void oled_reset();
-void oled_home();
-void oled_goto_line(int line);
-void oled_goto_column(int column, int length);
-void oled_clear_line(int line);
-void oled_clear();
-void oled_pos(int line, int column);
-void oled_print(char letter);
-void oled_write_command(uint8_t command);
-void oled_print_letter(char c);
+//set the current page, which the OLED writes to
+void oled_set_page(uint8_t page);
 
-void oled_test();
+//write command to OLED controller
+void oled_write_command(uint8_t command);
+
+//write a string to 
+void print_string_to_buffer(char* word, uint8_t length, position pos);
+
+//convert string to font uint8_t
+void convertStringToFont(char* myword, uint8_t mylength, uint8_t mystring[]);
+
+//test function flashing OLED and writing test output to the display
+void oled_test(void);
+
+//prints blobs to the display
+void printBlobs(void);
+
+//prints greetings to the display
+void printGreetings(void);
+
+//prints current menu entries on the OLED
+void printMenu(menu* menu_entries);
+
+//say hello to the guy in front of the display
+void sayHello(void);
+
+//prints buffer to serial output
+void print_buffer_to_serial(void);
 
 #endif

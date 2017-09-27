@@ -3,16 +3,12 @@
 #ifndef JOYS
 #define JOYS 
 
-#include "adc.h"
-#include "uart_driver.h"
-#include <stdbool.h>
-#include <util/delay.h>
-
 #define JOY_H 4
 #define JOY_V 5
 #define SL_L 6
 #define SL_R 7
 
+#include <stdbool.h>
 
 typedef struct  
 {

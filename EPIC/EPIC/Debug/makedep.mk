@@ -4,6 +4,10 @@
 
 adc.c
 
+graphic.c
+
+menu.c
+
 EPIC.c
 
 joystick_driver.c

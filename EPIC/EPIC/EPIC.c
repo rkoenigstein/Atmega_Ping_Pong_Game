@@ -7,10 +7,6 @@
 
 #define F_CPU 4915200 // Clock speed
 
-
-
-//connection of usb board
-
 #include <util/delay.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -18,6 +14,11 @@
 #include "sram.h"
 #include "adc.h"
 #include "oled_driver.h"
+#include "menu.h"
+//#include "graphic.h"
+
+
+menu* menu_main;
 
 void main_init (void)
 {
@@ -27,30 +28,32 @@ void main_init (void)
 	JOY_init();
 	sei();	
 	oled_init();
+	createMenu(menu_main);
 }
 
 int main(void)
 {
-	
 	main_init();
-	oled_test();
-	/**while(1)
-	{
-		oled_test();
-		_delay_ms(40);
-	}
+	printf("INIT DONE\n");
+	
+	//say hello to the guy in front of the display
+	sayHello();
+	_delay_ms(2000);
+	
 	while(1)
 	{
-	char result = ADC_read(7);
-	printf("%d\n",result);
-	_delay_ms(100);	
-	}*/
-	//while(1);
+		//clear_buffer();
+		//print_buffer();
+		printMenu(menu_main);
+		_delay_ms(200);
+	}
 	
+	//TEST_graphic();
+	//oled_test();
 	//TEST_USB_BOARD();
 	//TEST_GAL();
 	//TEST_ADC();
 	//TEST_SRAM_test();
-   //TEST_write_adress();
+    //TEST_write_adress();
    return 0;
 }

@@ -1,5 +1,8 @@
 //Joystick driver
 #include "joystick_driver.h"
+#include "adc.h"
+#include "uart_driver.h"
+#include <util/delay.h>
 
 //
 void JOY_init()
