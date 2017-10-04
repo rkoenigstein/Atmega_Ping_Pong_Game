@@ -110,23 +110,27 @@ void oled_write_command(uint8_t command)
 	*_command = command;
 }
 
-void print_string_to_buffer(char* word, uint8_t length, position pos)
+void print_string_to_buffer(char* word, position pos)
 {
-	uint8_t mystring[128*length];
-	convertStringToFont(word, length, mystring);
-	memcpy(oled_buffer + (pos.page<<7)+pos.column, mystring, 8*length);
+	uint8_t i = 0;
+	
+	uint8_t col = pos.column;
+	
+	while (word[i] != '\0')
+	{
+		for (uint8_t j = 0; j < 8; j++) {
+			*(oled_buffer + (pos.page<<7)+col) = pgm_read_byte(&font8[word[i]-32][j]);
+			col++;
+		}
+		i++;
+	}
 }
 
-void convertStringToFont(char* myword, uint8_t mylength, uint8_t mystring[])
+void print_selection(uint8_t page)
 {
-	for(int j = 0; j < mylength; j++)
-	{
-		for(int i = 0; i < 8; i++)
-		{
-			mystring[j*8+i] = (PGM_P)pgm_read_byte(&font8[myword[j]-32][i]);			
-		}
-		//printf("%d~\n", j);
-	}
+	position pos = { .column = 120, .page = page};
+	print_string_to_buffer("<", pos);
+	print_buffer();
 }
 
 void oled_test()
@@ -140,7 +144,7 @@ void oled_test()
 		print_buffer();
 		_delay_ms(2000);
 		position pos = { .page=1, .column = 5};
-		print_string_to_buffer("hello_world", 11, pos);
+		print_string_to_buffer("hello_world", pos);
 		print_buffer();
 		_delay_ms(2000);
 	}
@@ -154,25 +158,38 @@ void printBlobs(void)
 void printGreetings(void)
 {
 	int counter = 0;
-	while(1)
-	{
-		position pos = {.page = 4, .column = counter++};
-		print_string_to_buffer("I want to greet my mom, because she is soooo nice. I want to greet my grandma, because she is soooo pretty. I want to say hello to my teacher, because he is soooo bright. I want to say hello to my friend Peter, because he is soooo friendly. ", 235, pos);
-		_delay_ms(50);
-	}
+	position pos = {.page = 3, .column = 2};
+	print_string_to_buffer("I want to greet ", pos);
+	pos.page++;
+	print_string_to_buffer("grandma, because", pos);
+	pos.page++;
+	print_string_to_buffer(" she is soooooooo pretty", pos);
+	print_buffer();
+	_delay_ms(1000);
 }
 
 void printMenu(MenuNode* menu_entries)
 {
-	printf("Menu num submenus: %d\n", menu_entries->m_num_submenus);
-	for(int i = 0; i < menu_entries->m_num_submenus; i++)
+	clear_buffer();
+	if(menu_entries)
 	{
-		position pos = { .page = i, .column = 2 };
-		printf("Menu title: %s\n", menu_entries->m_content.title);
-		print_string_to_buffer(menu_entries->m_submenus[i]->m_content.title, menu_entries->m_content.title_length, pos);
-		print_buffer();
+		for(int i = 0; i < menu_entries->m_num_submenus; i++)
+		{
+			if(menu_entries->m_submenus)
+			{
+				//TODO check if num submenus < 8
+				position pos = { .page = i, .column = 2 };
+				print_string_to_buffer(menu_entries->m_submenus[i]->m_content.title, pos);
+			}
+			else
+				printf("NULL submenu\n");
+		}
+		print_buffer();		
+	}	
+	else
+	{
+		printf("empty menu pointer detected\n");
 	}
-	
 }
 
 void sayHello(void)
@@ -181,23 +198,23 @@ void sayHello(void)
 	print_buffer();
 	_delay_ms(2000);
 	position pos = { .page = 0, .column =0 };
-	print_string_to_buffer(" .------------. ", 16, pos);
+	print_string_to_buffer(" .------------. ", pos);
 	pos.page++;
-	print_string_to_buffer(" | Ping Pong! | ", 16, pos);
+	print_string_to_buffer(" | Ping Pong! | ", pos);
 	pos.page++;
-	print_string_to_buffer(" `------------' ", 16, pos);
+	print_string_to_buffer(" `------------' ", pos);
 	pos.page++;
-	print_string_to_buffer("        ^       ", 16, pos);
+	print_string_to_buffer("       ^        ", pos);
 	pos.page++;
-	print_string_to_buffer("       |  (\\_/) ", 16, pos);
+	print_string_to_buffer("       |  (\\_/) ", pos);
 	pos.page++;
-	print_string_to_buffer("       |__(O.o) ", 16, pos);
+	print_string_to_buffer("       |__(O.o) ", pos);
 	pos.page++;
-	print_string_to_buffer("          (> <) ", 16, pos);
+	print_string_to_buffer("          (> <) ", pos);
 	print_buffer();	
-	_delay_ms(5000);
-	//clear_buffer();
-	//print_buffer();
+	_delay_ms(2000);
+	clear_buffer();
+	print_buffer();
 }
 
 void print_buffer_to_serial(void)

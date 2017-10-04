@@ -120,6 +120,27 @@
     <Compile Include="adc.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="can_driver.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="can_driver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MCP2515.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="mcp_driver.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="mcp_driver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="spi_driver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="spi_driver.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="dummy.c">
       <SubType>compile</SubType>
     </Compile>

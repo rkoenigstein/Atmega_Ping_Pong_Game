@@ -14,7 +14,6 @@ typedef struct MenuContent MenuContent;
 
 struct MenuContent {
 	 const char* title;
-	 uint8_t title_length;
 	 void (*operation)(void);
 };
 

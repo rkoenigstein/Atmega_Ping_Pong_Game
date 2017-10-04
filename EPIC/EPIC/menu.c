@@ -1,6 +1,10 @@
 #include "menu.h"
 
-extern void printDumb(void);
+#define F_CPU 4915200 // Clock speed
+
+#include <util/delay.h>
+
+extern void printGreetings(void);
 extern void print1(void);
 extern void print2(void);
 extern void print3(void);
@@ -8,25 +12,30 @@ extern void print4(void);
 extern void printMain(void);
 
 static MenuNode* _menu;
+//volatile uint16_t menu_current_address = 0x1C00;
 
-MenuNode* createMenuNode(char* title, int title_length, void (*operation)(void), uint8_t num_of_submenus)
+MenuNode* createMenuNode(char* title, void (*operation)(void), uint8_t num_of_submenus)
 {
-	MenuNode* _mnode = malloc(sizeof(MenuNode));
-	_mnode->m_submenus = malloc(num_of_submenus * sizeof(MenuNode*));
+	MenuNode* _mnode = malloc(sizeof(MenuNode));//(MenuNode*) menu_current_address;
+	_mnode->m_submenus = malloc(num_of_submenus*sizeof(MenuNode*));//(MenuNode**) (menu_current_address + num_of_submenus*sizeof(MenuNode*));
 	_mnode->m_num_submenus = num_of_submenus;
 	_mnode->m_content.title = title;
-	_mnode->m_content.title_length = title_length;
 	_mnode->m_content.operation = operation;
 	return _mnode;
 }
 
 static void assignParents(MenuNode* node)
 {
-	for(uint8_t i = 0; i < node->m_num_submenus; i++)
+	if(node)
 	{
-		node->m_submenus[i]->m_parent = node;
-		assignParents(node->m_submenus[i]);
+		for(uint8_t i = 0; i < node->m_num_submenus; i++)
+		{
+			node->m_submenus[i]->m_parent = node;
+			assignParents(node->m_submenus[i]);
+		}
 	}
+	if(!node)
+		printf("NULL node\n");
 }
 
 MenuNode* getMenuRoot(void)
@@ -41,16 +50,19 @@ MenuNode* getMenuRoot(void)
 
 void createMenu(void)
 {
-	_menu = createMenuNode("root", 4, &printMain, 4);
-	_menu->m_submenus[0] = createMenuNode("Games", 5, &print1, 1);
-	_menu->m_submenus[0]->m_submenus[0] = createMenuNode("PingPong", 8, &print2, 0);
-	_menu->m_submenus[1] = createMenuNode("Players", 7, &print3, 1);
-	_menu->m_submenus[1]->m_submenus[0] = createMenuNode("Create User", 11, NULL, 0);
- 	_menu->m_submenus[2] = createMenuNode("Settings", 8, &print4, 1);
-	_menu->m_submenus[2]->m_submenus[0] = createMenuNode("Calibrate Joystick", 18, NULL, 0);
-	_menu->m_submenus[3] = createMenuNode("Dummy", 5, &printDumb, 1);
-	_menu->m_submenus[3]->m_submenus[0] = createMenuNode("Printdummy", 20, NULL, 0);
+	_menu = createMenuNode("root", NULL, 4);
+	_menu->m_submenus[0] = createMenuNode("Games", NULL, 2);
+	_menu->m_submenus[0]->m_submenus[0] = createMenuNode("PingPong", &print2, 0);
+	_menu->m_submenus[0]->m_submenus[1] = createMenuNode("PingPang", &print1, 0);
+	_menu->m_submenus[1] = createMenuNode("Players", NULL, 1);
+	_menu->m_submenus[1]->m_submenus[0] = createMenuNode("Create User", &print2, 0);
+	_menu->m_submenus[2] = createMenuNode("Settings", NULL, 1);
+	_menu->m_submenus[2]->m_submenus[0] = createMenuNode("Calibrate Joystick", &print2, 0);
+	_menu->m_submenus[3] = createMenuNode("Dummy", NULL, 1);
+	_menu->m_submenus[3]->m_submenus[0] = createMenuNode("Printdummy", &printGreetings, 0);
 	assignParents(_menu);	
+	printf("PARENTS ASSIGNED\n"); 
+	
 }
 
 MenuNode* getNextEntry(MenuNode* node)

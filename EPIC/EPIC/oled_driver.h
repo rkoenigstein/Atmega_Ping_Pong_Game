@@ -52,10 +52,7 @@ void oled_set_page(uint8_t page);
 void oled_write_command(uint8_t command);
 
 //write a string to 
-void print_string_to_buffer(char* word, uint8_t length, position pos);
-
-//convert string to font uint8_t
-void convertStringToFont(char* myword, uint8_t mylength, uint8_t mystring[]);
+void print_string_to_buffer(char* word, position pos);
 
 //test function flashing OLED and writing test output to the display
 void oled_test(void);
@@ -74,5 +71,8 @@ void sayHello(void);
 
 //prints buffer to serial output
 void print_buffer_to_serial(void);
+
+//print selection arrow
+void print_selection(uint8_t page);
 
 #endif

@@ -38,6 +38,9 @@ SUBDIRS :=
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
 ../adc.c \
+../can_driver.c \
+../mcp_driver.c \
+../spi_driver.c \
 ../dummy.c \
 ../graphic.c \
 ../menu.c \
@@ -56,6 +59,9 @@ ASM_SRCS +=
 
 OBJS +=  \
 adc.o \
+can_driver.o \
+mcp_driver.o \
+spi_driver.o \
 dummy.o \
 graphic.o \
 menu.o \
@@ -67,6 +73,9 @@ uart_driver.o
 
 OBJS_AS_ARGS +=  \
 adc.o \
+can_driver.o \
+mcp_driver.o \
+spi_driver.o \
 dummy.o \
 graphic.o \
 menu.o \
@@ -78,6 +87,9 @@ uart_driver.o
 
 C_DEPS +=  \
 adc.d \
+can_driver.d \
+mcp_driver.d \
+spi_driver.d \
 dummy.d \
 graphic.d \
 menu.d \
@@ -89,6 +101,9 @@ uart_driver.d
 
 C_DEPS_AS_ARGS +=  \
 adc.d \
+can_driver.d \
+mcp_driver.d \
+spi_driver.d \
 dummy.d \
 graphic.d \
 menu.d \
@@ -112,6 +127,12 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
+
+
+
+
+
+
 
 
 

@@ -9,18 +9,19 @@
 #define SL_R 7
 
 #include <stdbool.h>
+#include <stdint.h>
 
-typedef struct  
+typedef struct
 {
 	int x;
 	int y;
-	int dir;	
+	int dir;
 } JOY_POS;
 
-typedef struct  
+typedef struct
 {
 	int l;
-	int r;	
+	int r;
 } SLID;
 
 enum JOY_DIR {NEUTRAL,LEFT, RIGHT, UP, DOWN, LEFT_UP, LEFT_DOWN, RIGHT_UP, RIGHT_DOWN};

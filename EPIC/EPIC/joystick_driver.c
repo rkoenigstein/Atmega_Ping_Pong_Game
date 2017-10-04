@@ -4,6 +4,9 @@
 #include "uart_driver.h"
 #include <util/delay.h>
 
+JOY_POS mid_point = { .x = 125, .y = 129};
+uint8_t margin = 15;
+
 //
 void JOY_init()
 {
@@ -43,6 +46,36 @@ JOY_POS JOY_getPosition(void)
 	{
 		value.dir = DOWN;
 	}
+	
+	switch(value.dir)
+	{
+		case UP:
+		{
+			value.dir = value.y > mid_point.y + margin ? value.dir : NEUTRAL; 
+			break;
+		}
+		case RIGHT:
+		{
+			value.dir = value.x > mid_point.x + margin ? value.dir : NEUTRAL; 
+			break;
+		}
+		case DOWN:
+		{
+			value.dir = value.y < mid_point.y - margin ? value.dir : NEUTRAL; 
+			break;
+		}
+		case LEFT:
+		{
+			value.dir = value.x < mid_point.x - margin ? value.dir : NEUTRAL; 
+			break;
+		}
+		default:
+		{
+			printf("Error receiving joystick value\n");
+			break;
+		}
+	}
+	
 	return value;
 }
 
