@@ -38,6 +38,7 @@ SUBDIRS :=
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
 ../adc.c \
+../dummy.c \
 ../graphic.c \
 ../menu.c \
 ../EPIC.c \
@@ -55,6 +56,7 @@ ASM_SRCS +=
 
 OBJS +=  \
 adc.o \
+dummy.o \
 graphic.o \
 menu.o \
 EPIC.o \
@@ -65,6 +67,7 @@ uart_driver.o
 
 OBJS_AS_ARGS +=  \
 adc.o \
+dummy.o \
 graphic.o \
 menu.o \
 EPIC.o \
@@ -75,6 +78,7 @@ uart_driver.o
 
 C_DEPS +=  \
 adc.d \
+dummy.d \
 graphic.d \
 menu.d \
 EPIC.d \
@@ -85,6 +89,7 @@ uart_driver.d
 
 C_DEPS_AS_ARGS +=  \
 adc.d \
+dummy.d \
 graphic.d \
 menu.d \
 EPIC.d \
@@ -107,6 +112,8 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
+
+
 
 
 

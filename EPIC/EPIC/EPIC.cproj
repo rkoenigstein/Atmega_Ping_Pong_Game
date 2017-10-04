@@ -120,6 +120,9 @@
     <Compile Include="adc.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="dummy.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="graphic.c">
       <SubType>compile</SubType>
     </Compile>

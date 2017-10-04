@@ -16,6 +16,7 @@ typedef struct
 	int y;
 	int dir;	
 } JOY_POS;
+
 typedef struct  
 {
 	int l;

@@ -67,7 +67,7 @@ void printBlobs(void);
 void printGreetings(void);
 
 //prints current menu entries on the OLED
-void printMenu(menu* menu_entries);
+void printMenu(MenuNode* menu_entries);
 
 //say hello to the guy in front of the display
 void sayHello(void);

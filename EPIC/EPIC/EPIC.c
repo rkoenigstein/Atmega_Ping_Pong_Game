@@ -15,20 +15,22 @@
 #include "adc.h"
 #include "oled_driver.h"
 #include "menu.h"
+//#include "joystick_driver.h"
 //#include "graphic.h"
 
 
-menu* menu_main;
+MenuNode* menu_main;
+//JOY_POS joy_pos;
 
 void main_init (void)
 {
 	uart_init(BAUDRATE);
 	sram_init();
 	adc_init();
-	JOY_init();
+	//JOY_init();
 	sei();	
 	oled_init();
-	createMenu(menu_main);
+	//menu_main = getMenuRoot();
 }
 
 int main(void)
@@ -38,14 +40,14 @@ int main(void)
 	
 	//say hello to the guy in front of the display
 	sayHello();
-	_delay_ms(2000);
-	
+		
 	while(1)
 	{
-		//clear_buffer();
-		//print_buffer();
-		printMenu(menu_main);
-		_delay_ms(200);
+		//joy_pos = JOY_getPosition();
+		//_delay_ms(10);
+		
+		//printMenu(menu_main);
+		//_delay_ms(200);
 	}
 	
 	//TEST_graphic();

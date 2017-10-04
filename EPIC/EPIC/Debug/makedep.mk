@@ -4,6 +4,8 @@
 
 adc.c
 
+dummy.c
+
 graphic.c
 
 menu.c

@@ -1,21 +1,46 @@
-#ifndef MENU
-#define MENU
+#ifndef MENU_H_INCLUDED
+#define MENU_H_INCLUDED
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdint.h>
 
-#define MAX_TITLE_LENGTH 32
-#define MAX_NUM_OF_SUBMENUS 10
+#define MAX_STRING 25
+#define MAX_SUBMENUS 16
 
-typedef struct menu{
-	char* menu_title;
-	uint8_t title_length;
-	void (*operation)();
-	uint8_t num_of_submenus;
-	struct menu *submenu;
-	struct menu *parent_menu;
-	} menu;
-	
-menu createMenu(void);
-	
+typedef struct MenuNode MenuNode;
+typedef struct MenuContent MenuContent;
+
+struct MenuContent {
+	 const char* title;
+	 uint8_t title_length;
+	 void (*operation)(void);
+};
+
+struct MenuNode {
+	MenuContent m_content;
+	MenuNode* m_parent;
+	MenuNode** m_submenus;
+	uint8_t m_num_submenus;
+};
+
+// return root of menu
+MenuNode* getMenuRoot(void);
+
+// create menu
+void createMenu(void);
+
+// return next entry in the hierarchy if there is any or the current node elsewise
+MenuNode* getNextEntry(MenuNode* node);
+
+// return previous entry in the hierarchy if there is any or the current node elsewise
+MenuNode* getPreviousEntry(MenuNode* node);
+
+// open submenu with index index
+MenuNode* menuLevelDown(MenuNode* const node, uint8_t index_of_submenu);
+
+// open parent menu
+MenuNode* menuLevelUp(MenuNode* const node);
+
 #endif

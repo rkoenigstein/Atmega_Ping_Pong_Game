@@ -32,7 +32,7 @@ void oled_init()
 	
 	//set display offset
 	oled_write_command(0xd3);
-	oled_write_command(1);
+	oled_write_command(0);
 	//set display start line
 	oled_write_command(0x40);
 	//set page start address
@@ -162,14 +162,14 @@ void printGreetings(void)
 	}
 }
 
-void printMenu(menu* menu_entries)
+void printMenu(MenuNode* menu_entries)
 {
-	printf("Menu num submenus: %d\n", menu_entries->num_of_submenus);
-	for(int i = 0; i < menu_entries->num_of_submenus; i++)
+	printf("Menu num submenus: %d\n", menu_entries->m_num_submenus);
+	for(int i = 0; i < menu_entries->m_num_submenus; i++)
 	{
 		position pos = { .page = i, .column = 2 };
-		printf("Menu title: %s\n", menu_entries->menu_title);
-		print_string_to_buffer(menu_entries->submenu[i]->menu_title, menu_entries->title_length, pos);
+		printf("Menu title: %s\n", menu_entries->m_content.title);
+		print_string_to_buffer(menu_entries->m_submenus[i]->m_content.title, menu_entries->m_content.title_length, pos);
 		print_buffer();
 	}
 	
@@ -189,12 +189,15 @@ void sayHello(void)
 	pos.page++;
 	print_string_to_buffer("        ^       ", 16, pos);
 	pos.page++;
-	print_string_to_buffer("        |  (\\_/) ", 16, pos);
+	print_string_to_buffer("       |  (\\_/) ", 16, pos);
 	pos.page++;
-	print_string_to_buffer("        |__(O.o) ", 16, pos);
+	print_string_to_buffer("       |__(O.o) ", 16, pos);
 	pos.page++;
-	print_string_to_buffer("           (> <) ", 16, pos);
+	print_string_to_buffer("          (> <) ", 16, pos);
 	print_buffer();	
+	_delay_ms(5000);
+	//clear_buffer();
+	//print_buffer();
 }
 
 void print_buffer_to_serial(void)
