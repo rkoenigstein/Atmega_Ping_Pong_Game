@@ -45,7 +45,7 @@ SLID SLID_getPosition(void);
 
 static inline char *JOY_POS_toString(enum JOY_DIR joy_dir)
 {
-	static const char *strings[] = { "NEUTRAL", "LEFT", "RIGHT", "UP", "DOWN", "LEFT_UP", "LEFT_DOWN", "RIGHT_UP", "RIGHT_DOWN"};
+	static char *strings[] = { "NEUTRAL", "LEFT", "RIGHT", "UP", "DOWN", "LEFT_UP", "LEFT_DOWN", "RIGHT_UP", "RIGHT_DOWN"};
 
 	return strings[joy_dir];
 }

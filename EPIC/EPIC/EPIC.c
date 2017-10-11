@@ -19,6 +19,7 @@
 #include "menu.h"
 #include "joystick_driver.h"
 #include "spi_driver.h"
+
 //#include "graphic.h"
 
 
@@ -32,23 +33,29 @@ void main_init (void)
 	sram_init();
 	adc_init();
 	JOY_init();
-	spi_init();
-	mcp_init();
 	can_init();
 	sei();	
 	oled_init();
-	menu_main = getMenuRoot();
+	//menu_main = getMenuRoot();
 	printf("INIT DONE\n");
 	}
+	
+ISR(BADISR_vect)
+{
+	printf("getting random interrupts\n");
+}
 
 int main(void)
 {
 	main_init();
 	
 	//say hello to the guy in front of the display
-	sayHello();
+	//sayHello();
 	
-	while(1)
+	CAN_test();
+	_delay_ms(1000);
+	
+	while(0)
 	{
 		
 		joy_pos = JOY_getPosition();

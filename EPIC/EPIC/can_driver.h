@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include "mcp_driver.h"
 #include <stdbool.h>
+#include <avr/interrupt.h>
 
 typedef struct can_message
 {
@@ -18,7 +19,7 @@ typedef struct can_message
 void can_init(void);
 
 //send message to CAN bus
-void can_message_send(can_message);
+void can_message_send(can_message can_msg);
 
 //returns true if a bus error occured
 bool can_error(void);
@@ -30,5 +31,9 @@ bool can_transmit_complete(void);
 can_message can_data_receive(void);
 
 void can_int_vect(void);
+void printRegisters();
+
+//test CAN in loopback mode
+void CAN_test(void);
 
 #endif 

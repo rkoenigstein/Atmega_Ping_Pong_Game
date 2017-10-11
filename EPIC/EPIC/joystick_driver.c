@@ -2,6 +2,7 @@
 #include "joystick_driver.h"
 #include "adc.h"
 #include "uart_driver.h"
+#include <stdio.h>
 #include <util/delay.h>
 
 JOY_POS mid_point = { .x = 125, .y = 129};
