@@ -50,10 +50,20 @@ int main(void)
 	main_init();
 	
 	//say hello to the guy in front of the display
-	//sayHello();
+	sayHello();
 	
-	CAN_test();
+	
+	/*can_message node_2;
+	printf("Waiting for mz message\n");
+	node_2=can_data_receive();
+	printf("Got it\n");
+	printf("CAN id: %d, CAN data length: %d, CAN data: %c, %c, %c, %c, %c \n",node_2.id, node_2.length, node_2.data[0], node_2.data[1], node_2.data[2], node_2.data[3],node_2.data[4], node_2.data[5]);*/
+	
+	//CAN_test();
 	_delay_ms(1000);
+	
+	TEST_graphic();
+		//_delay_ms(1000);	
 	
 	while(0)
 	{

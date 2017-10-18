@@ -32,7 +32,7 @@ void oled_init()
 	
 	//set display offset
 	oled_write_command(0xd3);
-	oled_write_command(0);
+	oled_write_command(1);
 	//set display start line
 	oled_write_command(0x40);
 	//set page start address

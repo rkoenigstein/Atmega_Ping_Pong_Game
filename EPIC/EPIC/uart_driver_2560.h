@@ -4,7 +4,7 @@
 #define UART_driver
 
 #define BAUD 9600
-#define FOSC 4915200
+#define FOSC 16000000 
 #define BAUDRATE FOSC/16/BAUD-1
 
 #include <avr/io.h>

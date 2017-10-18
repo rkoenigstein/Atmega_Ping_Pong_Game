@@ -6,6 +6,7 @@
 #define DD_MISO DDB6
 #define DDR_SPI DDRB
 #define DD_SCK DDB7
+#define DD_SS DDB4
 
 void spi_Slaveinit(void)
 {
@@ -17,7 +18,8 @@ void spi_Slaveinit(void)
 void spi_Masterinit(void)
 {	
 	/* Set MOSI, SCK and SS output, all others input */
-	DDRB |= (1<<DDB4)|(1<<DDB5)|(1<<DDB7);
+	DDR_SPI |= (1<<DD_SS)|(1<<DD_MOSI)|(1<<DD_SCK);
+	//DDRB &= ~(1<<DD_MISO); //set MISO as input
 	/* Enable SPI, Master, set clock rate fck/16 */
 	SPCR |= (1<<SPE)|(1<<MSTR)|(1<<SPR0);
 }
@@ -41,6 +43,7 @@ void spi_MasterTransmit(char cData)
 
 char spi_SlaveReceive(void)
 {
+	//send dummy data
 	SPDR = 0xFF;
 	/* Wait for reception complete */
 	while(!(SPSR & (1<<SPIF)))

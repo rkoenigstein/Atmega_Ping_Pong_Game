@@ -21,26 +21,20 @@
 volatile int msg_received_flag = 0;
 
 void can_init(void)
-{
-	
-	//BUFFER ONE WORKING!!!
-	
+{	
 	mcp_init();
 		
 	//turn off filters and rollover for receive buffer 0
-	mcp_bit_modify(NO_FILTERS_AND_MASKS, MCP_RXB0CTRL , 0xFF);
-	//enable interrupt for received message
-	mcp_bit_modify(MCP_RX0IF, MCP_CANINTE, 0x00);
+	mcp_write(MCP_RXB0CTRL , 0b01100000);
+
+	//enable interrupt for received message on both buffers
+	mcp_write(MCP_CANINTE , MCP_RX0IF);
 	
 	//activate loopback mode on the MCP2515 for today
-	mcp_bit_modify(MODE_MASK, MCP_CANCTRL, MODE_LOOPBACK);
-		
-	printf("BFPCTRL: 0x%02x\n", mcp_read(0x0C));
-
-	//printf("CANINTE 0x%02x\n", mcp_read(MCP_CANINTE));
+	//mcp_bit_modify(MODE_MASK, MCP_CANCTRL, MODE_LOOPBACK);
 	
 	//activate normal mode on the MCP2515 (only mode in which it can transmit CAN messages
-	//mcp_bit_modify(MODE_MASK, MCP_CANCTRL, MODE_NORMAL);
+	mcp_bit_modify(MODE_MASK, MCP_CANCTRL, MODE_NORMAL);
 	
 	//enabling CAN interrupts
 	cli();
@@ -67,14 +61,18 @@ void can_message_send(can_message can_msg)
 		
 		//send transmission request for transmitted CAN msg to MCP2515
 		mcp_request_to_send(TXB0);
-	}	
+	}
+	else 
+	{
+		if(can_error())
+			printf("CAN transmission error\n");	
+	}
 }
 
 bool can_error(void)
 {
 	//read CAN error status out of respective register
 	return TXERR & mcp_read(MCP_TXB0CTRL);
-	
 }
 
 bool can_transmit_complete(void)
@@ -85,18 +83,13 @@ bool can_transmit_complete(void)
 
 can_message can_data_receive(void)
 {
-	can_message can_msg; 
-	
-	printf("CANINTF.RX0IF: 0x%02x\n", mcp_read(MCP_CANINTF));
-	
-	printf("RXB0SIDH: 0x%02x\n", mcp_read(MCP_RXB0SIDH) );
+	can_message can_msg; 	
 	while(!msg_received_flag);
-	//while(!(mcp_read(0x2c) & (1 | 2)));
-	printf("jkslfgdfg\n");
+	
 	//read upper 8 bit of id
-	can_msg.id = mcp_read(MCP_RXB0SIDH) << 5;
+	can_msg.id = mcp_read(MCP_RXB0SIDH) << 3; 
 	//read lower 8 bit of id
-	can_msg.id |= mcp_read(MCP_RXB0SIDL) >> 3;
+	can_msg.id |= mcp_read(MCP_RXB0SIDL) >> 5;
 	//read length of CAN data
 	can_msg.length = mcp_read(MCP_RXB0DLC);
 	//read CAN data
@@ -105,8 +98,8 @@ can_message can_data_receive(void)
 	msg_received_flag = 0;
 	
 	//allow new message to be received into the buffer
-	//mcp_write(MCP_RX0IF, 0x00);
 	mcp_bit_modify(MCP_RX0IF, MCP_CANINTF, 0x00);
+
 	return can_msg;
 }
 
@@ -119,27 +112,26 @@ void can_int_vect(void)
 ISR(INT0_vect)
 {
 	printf("interrupted!\n");
-	printf("CANINTF.RX0IF: 0x%02x\n", mcp_read(MCP_CANINTF));
+	//clear interrupt bits for rx buffer 0
 	mcp_bit_modify(MCP_RX0IF, MCP_CANINTF, 0x00);
+	
 	msg_received_flag = 1;
 }
 
 void CAN_test(void)
 {
-	//activate loopback mode on the MCP2515 for today
-	mcp_bit_modify(MODE_MASK, MCP_CANCTRL, MODE_LOOPBACK);
-
 	//received CAN message
 	can_message received_msg;
 
 	//send CAN message 
-	can_message can_msg = { .id = 1000, .length = 4, .data = {'a', 'c', 'A', '!'}};
+	can_message can_msg = { .id = 100, .length = 5, .data = {'i', 'C', 'A', 'N', 't'}};
+		
 	can_message_send(can_msg);
-	_delay_ms(100);
+	_delay_ms(10);
 	//receive CAN message
 	received_msg = can_data_receive();
-	
-	printf("CAN id: %d, CAN data length: %d, CAN data: %c, %c, %c, %c\n", received_msg.id, received_msg.length, received_msg.data[0], received_msg.data[1], received_msg.data[2], received_msg.data[3]);
+
+	printf("CAN id: %d, CAN data length: %d, CAN data: %c, %c, %c, %c, %c \n", received_msg.id, received_msg.length, received_msg.data[0], received_msg.data[1], received_msg.data[2], received_msg.data[3], received_msg.data[4]);
 }
 
 void printRegisters(void)

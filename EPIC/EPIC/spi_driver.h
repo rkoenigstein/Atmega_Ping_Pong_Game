@@ -22,14 +22,6 @@ void spi_MasterTransmit(char cData);
 //SPI get data from slave
 char spi_SlaveReceive(void);
 
-//Read MCP status
-char mcp_read_status(void);
-
-//Modify data fitting bit mask in register of adress reg_adr
-void mcp_bit_modify(char mask_byte, uint8_t reg_adr, char data);
-
-//Select output buffer for CAN communication (USE TXB0/1/2 or NO_BUFFER)
-void mcp_request_to_send (uint8_t out_buffer);
 
 
 #endif
