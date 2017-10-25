@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 
+enum{RECT_EMPT, FULL, TRI_EMPT, CIRC_EMPT};
 //define a position
 struct pos
 {
@@ -17,7 +18,7 @@ struct rect
     POS pos;
     int Lx; //length in x
     int Ly; //length in y
-    bool full;//full or just the border
+    int full;//full or just the border
 };
 typedef struct rect RECT;
 
@@ -26,7 +27,7 @@ struct circ
 {
     POS pos;
     int r; //radius of the circle
-    bool full;//full or just the border
+    int full;//full or just the border
 };
 typedef struct circ CIRC;
 
@@ -35,7 +36,7 @@ struct tri
 {
     POS pos;
     int l; //length of the triangle
-    bool full;//full or just the border
+    int full;//full or just the border
     int ori;//orientation with enum
 };
 typedef struct tri TRI;
@@ -57,6 +58,7 @@ void draw_triangle_buffer(TRI tri);
 //TEST
 void TEST_graphic(void);
 
+void TEST_animation(void);
 
 
 

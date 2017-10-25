@@ -1,6 +1,6 @@
 //UART driver
 
-#include "uart_driver.h"
+#include "uart_driver_2560.h"
 
 #define MAX_STRING 1000 
 

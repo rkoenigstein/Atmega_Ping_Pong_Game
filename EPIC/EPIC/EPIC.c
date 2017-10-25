@@ -22,9 +22,10 @@
 
 //#include "graphic.h"
 
+enum CAN_IDS {JOY};
 
 MenuNode* menu_main;
-JOY_POS joy_pos;
+JOY_POS joy_pos, old_joy_pos;
 uint8_t current_selection = 0;
 
 void main_init (void)
@@ -45,30 +46,33 @@ ISR(BADISR_vect)
 	printf("getting random interrupts\n");
 }
 
+void sendJoyPos(void)
+{
+	can_message joy_msg = { .id=JOY, .length=3, .data={joy_pos.x, joy_pos.y, joy_pos.dir} };
+	can_message_send(joy_msg);
+}
+
 int main(void)
 {
 	main_init();
 	
 	//say hello to the guy in front of the display
-	sayHello();
+	//sayHello();
 	
-	
-	/*can_message node_2;
-	printf("Waiting for mz message\n");
-	node_2=can_data_receive();
-	printf("Got it\n");
-	printf("CAN id: %d, CAN data length: %d, CAN data: %c, %c, %c, %c, %c \n",node_2.id, node_2.length, node_2.data[0], node_2.data[1], node_2.data[2], node_2.data[3],node_2.data[4], node_2.data[5]);*/
-	
-	//CAN_test();
-	_delay_ms(1000);
-	
-	TEST_graphic();
-		//_delay_ms(1000);	
+	while(1)
+	{
+		joy_pos = JOY_getPosition();
+		if(joy_pos.x > old_joy_pos.x + 10 || joy_pos.y > old_joy_pos.y + 10 || joy_pos.x < old_joy_pos.x - 10 || joy_pos.y < old_joy_pos.y - 10)
+			sendJoyPos();
+		_delay_ms(100);
+		old_joy_pos = joy_pos;
+	}
 	
 	while(0)
 	{
 		
 		joy_pos = JOY_getPosition();
+		sendJoyPos();
 		_delay_ms(10);
 		
 		switch(joy_pos.dir)
@@ -118,6 +122,10 @@ int main(void)
 		_delay_ms(300);
 	}
 	
+	
+	//testCANconnection();
+	//TEST_animation();
+	//CAN_test();
 	//TEST_graphic();
 	//oled_test();
 	//TEST_USB_BOARD();
@@ -126,4 +134,16 @@ int main(void)
 	//TEST_SRAM_test();
     //TEST_write_adress();
    return 0;
+}
+
+void testCANconnection(void)
+{
+	while(1)
+	{
+		can_message node_2;
+		printf("Waiting for mz message\n");
+		node_2 = can_data_receive();
+		printf("Got it\n");
+		printf("CAN id: %d, CAN data length: %d, CAN data: %c, %c, %c, %c \n",node_2.id, node_2.length, node_2.data[0], node_2.data[1], node_2.data[2], node_2.data[3],node_2.data[4]);
+	}
 }

@@ -28,8 +28,31 @@ bool JOY_button(int button)
 JOY_POS JOY_getPosition(void)
 {
 	JOY_POS value;
-	value.x=ADC_read(JOY_H);
-	value.y=ADC_read(JOY_V);
+	int val_x = 0;
+	int val_y = 0;
+	int sum_x = 0;
+	int sum_y = 0;
+	int largest_x = 0;
+	int largest_y = 0;
+	int smallest_x = 255;
+	int smallest_y = 255;
+	for(int i=0;i<7;i++)
+	{
+		val_x = ADC_read(JOY_H);
+		val_y = ADC_read(JOY_V);
+		smallest_x = val_x < smallest_x ? val_x : smallest_x;
+		smallest_y = val_y < smallest_y ? val_y : smallest_y;
+		largest_y = val_y > largest_y ? val_y : largest_y;
+		largest_x = val_x > largest_x ? val_x : largest_x;
+		sum_x += val_x;
+		sum_y += val_y;
+	}
+	sum_x = sum_x - largest_x - smallest_x;
+	sum_y = sum_y - largest_y - smallest_y;	 
+	sum_x /= 5;
+	sum_y /= 5;
+	value.x = sum_x;
+	value.y = sum_y;
 	
 	if(value.y >= -value.x+255 && value.y>=value.x)
 	{
