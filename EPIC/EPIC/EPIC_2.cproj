@@ -117,7 +117,19 @@
     <Compile Include="can_driver_2560.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="data_fit.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="data_fit.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="EPIC_2.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="i2c_driver.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="i2c_driver.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="ir_driver.c">
@@ -133,6 +145,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="mcp_driver_2560.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="motor_control.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="motor_control.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="servo_driver.c">
@@ -151,6 +169,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="timer_driver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TWI_Master.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TWI_Master.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="uart_driver_2560.c">
