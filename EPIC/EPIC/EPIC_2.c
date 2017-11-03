@@ -25,14 +25,18 @@ enum CAN_IDS {JOY};
 
 void main_init (void)
 {
+	cli();
 	uart_init(BAUDRATE);
 	can_init();
 	timer_init();
-	ir_init();
-	TWI_Master_Initialise();
-	
+	//ir_init();
+	//TWI_Master_Initialise();
 	sei();
+	//motor_init();
+	
 	printf("INIT DONE\n");
+	
+
 }
 
 void update_OCR(uint8_t joy_x_pos)
@@ -42,24 +46,6 @@ void update_OCR(uint8_t joy_x_pos)
 
 void updateScore(void)
 {
-	/*int val=0;
-	int flag=0;
-	for(uint8_t i=0; i<10;i++)
-	{
-		val = getIRValue();
-		if(val < 3)
-		{
-			flag++;
-			if(flag>9)
-			{
-				score++;
-				while (getIRValue()<3);
-				i=11;
-				break;
-				
-			}
-		}
-	}*/
 	
 	int val=0;
 	bool flag = false;
@@ -72,19 +58,26 @@ void updateScore(void)
 	{
 		score++;
 		while (getIRValue()< 3);
-		_delay_ms(2000);
+		_delay_ms(1000);
 	}
 }
 
 int main(void)
  {
 	main_init();
+	//int enc = getEncoderValue();
+	//printf("enc: %d\n", enc);
     while(1)
     {
+		shoot ();
+		printf("SHOOT\n");
+		_delay_ms(2000);
+	}
+	{
 		//printf("hey\n");
 		//printf("IR value: %d\n", getIRValue());
-		updateScore();
-		printf("The score is %d\n", score);
+		//updateScore();
+		//printf("The score is %d\n", score);
 		_delay_ms(100);
 
 		can_msg = can_data_receive();
@@ -98,7 +91,7 @@ int main(void)
 				current_joy_pos.dir = can_msg.data[2];
 				update_OCR(current_joy_pos.x);
 				printf("JOY x: %d, JOY y: %d, JOY dir: %d\n", current_joy_pos.x, current_joy_pos.y, current_joy_pos.dir);
-				setMotorSpeed(current_joy_pos);
+				setMotorPosition(current_joy_pos);
 				break;
 			}
 			default:

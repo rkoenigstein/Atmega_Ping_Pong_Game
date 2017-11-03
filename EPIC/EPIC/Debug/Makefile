@@ -39,6 +39,7 @@ SUBDIRS :=
 C_SRCS +=  \
 ../adc.c \
 ../can_driver.c \
+../data_fit.c \
 ../mcp_driver.c \
 ../spi_driver.c \
 ../dummy.c \
@@ -60,6 +61,7 @@ ASM_SRCS +=
 OBJS +=  \
 adc.o \
 can_driver.o \
+data_fit.o \
 mcp_driver.o \
 spi_driver.o \
 dummy.o \
@@ -74,6 +76,7 @@ uart_driver.o
 OBJS_AS_ARGS +=  \
 adc.o \
 can_driver.o \
+data_fit.o \
 mcp_driver.o \
 spi_driver.o \
 dummy.o \
@@ -88,6 +91,7 @@ uart_driver.o
 C_DEPS +=  \
 adc.d \
 can_driver.d \
+data_fit.d \
 mcp_driver.d \
 spi_driver.d \
 dummy.d \
@@ -102,6 +106,7 @@ uart_driver.d
 C_DEPS_AS_ARGS +=  \
 adc.d \
 can_driver.d \
+data_fit.d \
 mcp_driver.d \
 spi_driver.d \
 dummy.d \
@@ -127,6 +132,8 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
+
+
 
 
 

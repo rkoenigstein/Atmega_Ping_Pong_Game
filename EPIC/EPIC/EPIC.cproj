@@ -126,6 +126,12 @@
     <Compile Include="can_driver.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="data_fit.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="data_fit.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="MCP2515.h">
       <SubType>compile</SubType>
     </Compile>

@@ -3,10 +3,12 @@
 
 #include <avr/io.h>
 #include <stdbool.h>
+#include <avr/interrupt.h>
 
-#define Kp 4
-#define Ki 100
-#define T 1 //integral time in [ms].
+
+#define Kp 0.1
+#define Ki 0.5
+#define T 0.00102 //integral time in [ms].
 
 typedef struct
 {
@@ -23,7 +25,7 @@ typedef struct
 
 enum JOY_DIR {NEUTRAL,LEFT, RIGHT, UP, DOWN, LEFT_UP, LEFT_DOWN, RIGHT_UP, RIGHT_DOWN};
 
-void setMotorSpeed(JOY_POS joy_pos);
+void setMotorSpeed(void);
 
 void enableMotor(void);
 
@@ -33,11 +35,18 @@ void setMotorDir(bool position);
 
 double convertToAnalog(double startRange, double endRange, double val, double inRange);
 
-uint8_t getEncoderValue (void);
+void resetEncoder(void);
+
+int getEncoderValue(void);
 
 void PIMotorController(void);
 
-
 void PID_timer_init (void);
+
+void setMotorPosition(JOY_POS current_position);
+
+void motor_init(void);
+
+void shoot (void);
 
 #endif /* MOTOR_CONTROL_H_ */

@@ -41,7 +41,6 @@ void can_init(void)
 	EICRB &= ~(1<<ISC31);
 	EICRB &= ~(1<<ISC30);
 	EIMSK |= (1<<INT3);
-	sei();
 }
 
 void can_message_send(can_message can_msg)
@@ -111,7 +110,7 @@ void can_int_vect(void)
 
 ISR(INT3_vect)
 {
-	printf("interrupted!\n");
+	//printf("interrupted CAN!\n");
 	//clear interrupt bits for rx buffer 0
 	mcp_write(MCP_CANINTF, MCP_RX0IF & 0x00);
 	

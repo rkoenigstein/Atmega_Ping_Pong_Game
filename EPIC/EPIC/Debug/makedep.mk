@@ -6,6 +6,8 @@ adc.c
 
 can_driver.c
 
+data_fit.c
+
 mcp_driver.c
 
 spi_driver.c

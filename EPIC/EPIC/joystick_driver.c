@@ -27,70 +27,54 @@ bool JOY_button(int button)
 
 JOY_POS JOY_getPosition(void)
 {
-	JOY_POS value;
-	int val_x = 0;
-	int val_y = 0;
-	int sum_x = 0;
-	int sum_y = 0;
-	int largest_x = 0;
-	int largest_y = 0;
-	int smallest_x = 255;
-	int smallest_y = 255;
-	for(int i=0;i<7;i++)
+	int x[16];
+	int y[16];
+	JOY_POS real;
+	for(int i=0;i<15;i++)
 	{
-		val_x = ADC_read(JOY_H);
-		val_y = ADC_read(JOY_V);
-		smallest_x = val_x < smallest_x ? val_x : smallest_x;
-		smallest_y = val_y < smallest_y ? val_y : smallest_y;
-		largest_y = val_y > largest_y ? val_y : largest_y;
-		largest_x = val_x > largest_x ? val_x : largest_x;
-		sum_x += val_x;
-		sum_y += val_y;
+		x[i] = ADC_read(JOY_H);
+		y[i] = ADC_read(JOY_V);
 	}
-	sum_x = sum_x - largest_x - smallest_x;
-	sum_y = sum_y - largest_y - smallest_y;	 
-	sum_x /= 5;
-	sum_y /= 5;
-	value.x = sum_x;
-	value.y = sum_y;
-	
-	if(value.y >= -value.x+255 && value.y>=value.x)
+
+	real.x=data_fit(x, 15, 2, 10, 3);
+	real.y=data_fit(y, 15, 2, 10, 3);
+	if(real.y >= -real.x+255 && real.y>=real.x)
 	{
-		value.dir = UP;
+		real.dir = UP;
 	}
-	if(value.y >= -value.x+255 && value.y<value.x)
+	if(real.y >= -real.x+255 && real.y<real.x)
 	{
-		value.dir = RIGHT;
+		real.dir = RIGHT;
 	}			
-	if(value.y < -value.x+255 && value.y>=value.x)
+	if(real.y < -real.x+255 && real.y>=real.x)
 	{
-		value.dir = LEFT;
+		real.dir = LEFT;
 	}
-	if(value.y < -value.x+255 && value.y<value.x)
+	if(real.y < -real.x+255 && real.y<real.x)
 	{
-		value.dir = DOWN;
+		real.dir = DOWN;
 	}
 	
-	switch(value.dir)
+	switch(real.dir)
 	{
 		case UP:
 		{
-			value.dir = value.y > mid_point.y + margin ? value.dir : NEUTRAL; 
+			real.dir = real.y > mid_point.y + margin ? real.dir : NEUTRAL; 
 			break;
 		}
 		case RIGHT:
 		{
-			value.dir = value.x > mid_point.x + margin ? value.dir : NEUTRAL; 
+			real.dir = real.x > mid_point.x + margin ? real.dir : NEUTRAL; 
 			break;
 		}
 		case DOWN:
 		{
-			value.dir = value.y < mid_point.y - margin ? value.dir : NEUTRAL; 
+			real.dir = real.y < mid_point.y - margin ? real.dir : NEUTRAL; 
 			break;
 		}
 		case LEFT:
 		{
-			value.dir = value.x < mid_point.x - margin ? value.dir : NEUTRAL; 
+			real.dir = real.x < mid_point.x - margin ? real.dir : NEUTRAL; 
 			break;
 		}
 		default:
@@ -100,7 +84,7 @@ JOY_POS JOY_getPosition(void)
 		}
 	}
 	
-	return value;
+	return real;
 }
 
 SLID SLID_getPosition(void)

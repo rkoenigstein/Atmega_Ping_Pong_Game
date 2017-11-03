@@ -57,7 +57,7 @@ int main(void)
 	main_init();
 	
 	//say hello to the guy in front of the display
-	//sayHello();
+	sayHello();
 	
 	while(1)
 	{
