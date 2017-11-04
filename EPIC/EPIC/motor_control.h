@@ -5,10 +5,9 @@
 #include <stdbool.h>
 #include <avr/interrupt.h>
 
-
 #define Kp 0.1
 #define Ki 0.5
-#define T 0.00102 //integral time in [ms].
+#define T 0.00102 //integral time in [ms] -> counter overflow
 
 typedef struct
 {
@@ -25,28 +24,40 @@ typedef struct
 
 enum JOY_DIR {NEUTRAL,LEFT, RIGHT, UP, DOWN, LEFT_UP, LEFT_DOWN, RIGHT_UP, RIGHT_DOWN};
 
-void setMotorSpeed(void);
-
-void enableMotor(void);
-
-void disableMotor(void);
-
-void setMotorDir(bool position);
-
-double convertToAnalog(double startRange, double endRange, double val, double inRange);
-
-void resetEncoder(void);
-
-int getEncoderValue(void);
-
-void PIMotorController(void);
-
-void PID_timer_init (void);
-
-void setMotorPosition(JOY_POS current_position);
-
+/* enables motor and initializes timer for motor control */
 void motor_init(void);
 
-void shoot (void);
+/* initializes timer for updating motor control */
+void PID_timer_init (void);
 
-#endif /* MOTOR_CONTROL_H_ */
+/* enables the motor */
+void enableMotor(void);
+
+/* disables the motor */
+void disableMotor(void);
+
+/* sets the motor speed*/
+void setMotorSpeed(void);
+
+/* sets the direction of the motor */
+void setMotorDir(bool position);
+
+/* converts a value from range inRange to the range specified by startRange and endRange */
+double convertToAnalog(double startRange, double endRange, double val, double inRange);
+
+/* reset the motor encoder to restart counting the distance */
+void resetEncoder(void);
+
+/* returns the 16bit motor encoder value*/
+int getEncoderValue(void);
+
+/* update the PI motor control */
+void PIMotorController(void);
+
+/* updates the current joystick position */
+void setMotorPosition(JOY_POS current_position);
+
+/* shoots a 50ms kick with the solenoid */
+void shoot(void);
+
+#endif

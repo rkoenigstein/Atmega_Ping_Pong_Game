@@ -1,6 +1,4 @@
-//ADC driver
-
-#include "adc.h"
+#include "adc_driver.h"
 
 volatile int flag = 0;
 
@@ -21,6 +19,7 @@ char ADC_read(char channel)
 	return value;
 }
 
+//interrupt service routine to notice when data available
 ISR(INT2_vect)
 {
 	flag = 1;

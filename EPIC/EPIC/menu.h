@@ -24,22 +24,22 @@ struct MenuNode {
 	uint8_t m_num_submenus;
 };
 
-// return root of menu
+/* returns root of menu */
 MenuNode* getMenuRoot(void);
 
-// create menu
+/* creates menu */
 void createMenu(void);
 
-// return next entry in the hierarchy if there is any or the current node elsewise
+/* returns next entry in the hierarchy if there is any or the current node elsewise */
 MenuNode* getNextEntry(MenuNode* node);
 
-// return previous entry in the hierarchy if there is any or the current node elsewise
+/* returns previous entry in the hierarchy if there is any or the current node elsewise */
 MenuNode* getPreviousEntry(MenuNode* node);
 
-// open submenu with index index
+/* opens submenu with index index */
 MenuNode* menuLevelDown(MenuNode* const node, uint8_t index_of_submenu);
 
-// open parent menu
+/* opens parent menu */
 MenuNode* menuLevelUp(MenuNode* const node);
 
 #endif

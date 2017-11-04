@@ -1,28 +1,21 @@
-//Joystick driver
-#include "joystick_driver.h"
-#include "adc.h"
-#include "uart_driver.h"
 #include <stdio.h>
 #include <util/delay.h>
+#include "joystick_driver.h"
+#include "adc_driver.h"
+#include "uart_driver.h"
 
 JOY_POS mid_point = { .x = 125, .y = 129};
 uint8_t margin = 15;
 
-//
 void JOY_init()
 {
 	//set PIN 0 and 1 of port B as inputs
-	DDRB &= (0<<0)&(0<<1);	
-}
-
-void JOY_calibrate()
-{
-	
+	DDRB &= (0 << PB0) & (0 << PB1);
 }
 
 bool JOY_button(int button)
 {
-	return PORTB&(1<<button);
+	return PORTB & (1 << button);
 }
 
 JOY_POS JOY_getPosition(void)
@@ -30,51 +23,51 @@ JOY_POS JOY_getPosition(void)
 	int x[16];
 	int y[16];
 	JOY_POS real;
-	for(int i=0;i<15;i++)
+	for(int i = 0; i < 15; i++)
 	{
 		x[i] = ADC_read(JOY_H);
 		y[i] = ADC_read(JOY_V);
 	}
 
-	real.x=data_fit(x, 15, 2, 10, 3);
-	real.y=data_fit(y, 15, 2, 10, 3);
-	if(real.y >= -real.x+255 && real.y>=real.x)
+	real.x = data_fit(x, 15, 2, 10, 3);
+	real.y = data_fit(y, 15, 2, 10, 3);
+	if(real.y >= -real.x + 255 && real.y >= real.x)
 	{
 		real.dir = UP;
 	}
-	if(real.y >= -real.x+255 && real.y<real.x)
+	if(real.y >= -real.x + 255 && real.y < real.x)
 	{
 		real.dir = RIGHT;
-	}			
-	if(real.y < -real.x+255 && real.y>=real.x)
+	}
+	if(real.y < -real.x + 255 && real.y >= real.x)
 	{
 		real.dir = LEFT;
 	}
-	if(real.y < -real.x+255 && real.y<real.x)
+	if(real.y < -real.x + 255 && real.y < real.x)
 	{
 		real.dir = DOWN;
 	}
-	
+
 	switch(real.dir)
 	{
 		case UP:
 		{
-			real.dir = real.y > mid_point.y + margin ? real.dir : NEUTRAL; 
+			real.dir = real.y > mid_point.y + margin ? real.dir : NEUTRAL;
 			break;
 		}
 		case RIGHT:
 		{
-			real.dir = real.x > mid_point.x + margin ? real.dir : NEUTRAL; 
+			real.dir = real.x > mid_point.x + margin ? real.dir : NEUTRAL;
 			break;
 		}
 		case DOWN:
 		{
-			real.dir = real.y < mid_point.y - margin ? real.dir : NEUTRAL; 
+			real.dir = real.y < mid_point.y - margin ? real.dir : NEUTRAL;
 			break;
 		}
 		case LEFT:
 		{
-			real.dir = real.x < mid_point.x - margin ? real.dir : NEUTRAL; 
+			real.dir = real.x < mid_point.x - margin ? real.dir : NEUTRAL;
 			break;
 		}
 		default:
@@ -83,26 +76,22 @@ JOY_POS JOY_getPosition(void)
 			break;
 		}
 	}
-	
+
 	return real;
 }
 
 SLID SLID_getPosition(void)
 {
 	SLID value;
-	value.l=ADC_read(SL_L);
-	value.r=ADC_read(SL_R);
+	value.l = ADC_read(SL_L);
+	value.r = ADC_read(SL_R);
 	return value;
 }
 
-//DO we really need to get the direction ??
 int Y_getDirection(JOY_POS in)
 {
 	return in.dir;
 }
-
-
-//TEST function
 
 void TEST_USB_BOARD(void)
 {
@@ -110,9 +99,9 @@ void TEST_USB_BOARD(void)
 	SLID slid;
 	while(1)
 	{
-		value=JOY_getPosition();
+		value = JOY_getPosition();
 		printf("Joystick position x=%d , y=%d , direction=%s\n", value.x,  value.y,  JOY_POS_toString(value.dir));
-		slid=SLID_getPosition();
+		slid = SLID_getPosition();
 		printf("Slider Position: left=%d , right=%d\n",  slid.l,  slid.r);
 		_delay_ms(500);
 	}

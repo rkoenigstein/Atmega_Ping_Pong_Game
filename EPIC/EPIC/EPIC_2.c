@@ -26,27 +26,27 @@ enum CAN_IDS {JOY};
 void main_init (void)
 {
 	cli();
-	uart_init(BAUDRATE);
+	uart_init();
 	can_init();
 	timer_init();
 	//ir_init();
 	//TWI_Master_Initialise();
 	sei();
 	//motor_init();
-	
+
 	printf("INIT DONE\n");
-	
+
 
 }
 
 void update_OCR(uint8_t joy_x_pos)
 {
-	OCR4A = (uint8_t) calculateDutyCycle(joy_x_pos);	
+	OCR4A = (uint8_t) calculateDutyCycle(joy_x_pos);
 }
 
 void updateScore(void)
 {
-	
+
 	int val=0;
 	bool flag = false;
 	for(uint8_t i=0; i<10;i++)
@@ -81,10 +81,10 @@ int main(void)
 		_delay_ms(100);
 
 		can_msg = can_data_receive();
-		
+
 		switch(can_msg.id)
 		{
-			case JOY: 
+			case JOY:
 			{
 				current_joy_pos.x = can_msg.data[0];
 				current_joy_pos.y = can_msg.data[1];
@@ -100,6 +100,6 @@ int main(void)
 				break;
 			}
 		}
-		
+
     }
 }

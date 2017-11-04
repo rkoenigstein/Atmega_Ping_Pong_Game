@@ -1,24 +1,17 @@
-/*
- * EPIC.c
- *
- * Created: 06.09.2017 10:32:31
- *  Author: roberko
- */ 
-
-#define F_CPU 4915200 // Clock speed
-
-#include <util/delay.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "uart_driver.h"
 #include "sram.h"
-#include "adc.h"
+#include "adc_driver.h"
 #include "oled_driver.h"
 #include "can_driver.h"
 #include "mcp_driver.h"
 #include "menu.h"
 #include "joystick_driver.h"
 #include "spi_driver.h"
+
+#define F_CPU 4915200 // Clock speed
+#include <util/delay.h>
 
 //#include "graphic.h"
 
@@ -28,37 +21,38 @@ MenuNode* menu_main;
 JOY_POS joy_pos, old_joy_pos;
 uint8_t current_selection = 0;
 
-void main_init (void)
+void main_init(void)
 {
-	uart_init(BAUDRATE);
+	uart_init();
 	sram_init();
 	adc_init();
 	JOY_init();
 	can_init();
-	sei();	
+	sei();
 	oled_init();
 	//menu_main = getMenuRoot();
 	printf("INIT DONE\n");
-	}
-	
+}
+
+/* interrupt service routine catching undefined interrupts */
 ISR(BADISR_vect)
 {
-	printf("getting random interrupts\n");
+	printf("Got undefined interrupts\n");
 }
 
 void sendJoyPos(void)
 {
-	can_message joy_msg = { .id=JOY, .length=3, .data={joy_pos.x, joy_pos.y, joy_pos.dir} };
+	can_message joy_msg = { .id = JOY, .length = 3, .data = {joy_pos.x, joy_pos.y, joy_pos.dir} };
 	can_message_send(joy_msg);
 }
 
 int main(void)
 {
 	main_init();
-	
+
 	//say hello to the guy in front of the display
 	sayHello();
-	
+
 	while(1)
 	{
 		joy_pos = JOY_getPosition();
@@ -67,14 +61,14 @@ int main(void)
 		_delay_ms(100);
 		old_joy_pos = joy_pos;
 	}
-	
+
 	while(0)
 	{
-		
+
 		joy_pos = JOY_getPosition();
 		sendJoyPos();
 		_delay_ms(10);
-		
+
 		switch(joy_pos.dir)
 		{
 			case UP:
@@ -114,15 +108,15 @@ int main(void)
 			}
 			default:
 				break;
-			
+
 		}
-		
+
 		printMenu(menu_main);
 		print_selection(current_selection);
 		_delay_ms(300);
 	}
-	
-	
+
+
 	//testCANconnection();
 	//TEST_animation();
 	//CAN_test();
@@ -132,10 +126,11 @@ int main(void)
 	//TEST_GAL();
 	//TEST_ADC();
 	//TEST_SRAM_test();
-    //TEST_write_adress();
-   return 0;
+  //TEST_write_adress();
+  return 0;
 }
 
+/* test of CAN bus between node1 and node2 */
 void testCANconnection(void)
 {
 	while(1)

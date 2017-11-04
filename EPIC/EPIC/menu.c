@@ -1,9 +1,9 @@
 #include "menu.h"
 
 #define F_CPU 4915200 // Clock speed
-
 #include <util/delay.h>
 
+//include external functions passed to the menu
 extern void printGreetings(void);
 extern void print1(void);
 extern void print2(void);
@@ -12,12 +12,11 @@ extern void print4(void);
 extern void printMain(void);
 
 static MenuNode* _menu;
-//volatile uint16_t menu_current_address = 0x1C00;
 
 MenuNode* createMenuNode(char* title, void (*operation)(void), uint8_t num_of_submenus)
 {
-	MenuNode* _mnode = malloc(sizeof(MenuNode));//(MenuNode*) menu_current_address;
-	_mnode->m_submenus = malloc(num_of_submenus*sizeof(MenuNode*));//(MenuNode**) (menu_current_address + num_of_submenus*sizeof(MenuNode*));
+	MenuNode* _mnode = malloc(sizeof(MenuNode));
+	_mnode->m_submenus = malloc(num_of_submenus*sizeof(MenuNode*));
 	_mnode->m_num_submenus = num_of_submenus;
 	_mnode->m_content.title = title;
 	_mnode->m_content.operation = operation;
@@ -60,38 +59,26 @@ void createMenu(void)
 	_menu->m_submenus[2]->m_submenus[0] = createMenuNode("Calibrate Joystick", &print2, 0);
 	_menu->m_submenus[3] = createMenuNode("Dummy", NULL, 1);
 	_menu->m_submenus[3]->m_submenus[0] = createMenuNode("Printdummy", &printGreetings, 0);
-	assignParents(_menu);	
-	printf("PARENTS ASSIGNED\n"); 
-	
+	assignParents(_menu);
+	printf("PARENTS ASSIGNED\n");
+
 }
 
 MenuNode* getNextEntry(MenuNode* node)
 {
 	if(node->m_parent)
-	{
-        	for(uint8_t i = 0; i < node->m_parent->m_num_submenus-1; i++)
-		{
+    for(uint8_t i = 0; i < node->m_parent->m_num_submenus-1; i++)
 			if(node->m_parent->m_submenus[i] == node)
-			{
-                		return node->m_parent->m_submenus[i+1];
-            		}
-        	}
-    	}
-	return node; 
+	  		return node->m_parent->m_submenus[i+1];
+	return node;
 }
 
 MenuNode* getPreviousEntry(MenuNode* node)
 {
 	if(node->m_parent)
-	{
 		for(uint8_t i = 1; i < node->m_parent->m_num_submenus; i++)
-		{
 			if(node->m_parent->m_submenus[i] == node)
-			{
 				return node->m_parent->m_submenus[i-1];
-			}
-		}
-	}
 	return node;
 }
 

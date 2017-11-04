@@ -8,9 +8,7 @@
 #define BOTTOM 56
 #define PERIOD 1250
 
+/* initializing timer in mode 14 for pwm output with clk prescaler */
 void timer_init(void);
 
-
-
-
-#endif /* TIMER_DRIVER_H_ */
+#endif

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* simple test function for the menu if no board is available */
 int main()
 {
 
@@ -9,11 +10,11 @@ int main()
 	printf("Menu title: %s\n", menu->m_content.title);
 
 	menu->m_content.operation(); //"Main"
-	menu = getNextEntry(menu); 
+	menu = getNextEntry(menu);
 	menu->m_content.operation(); //"Main"
-	menu = getPreviousEntry(menu); 
+	menu = getPreviousEntry(menu);
 	menu->m_content.operation(); //"Main"
-	menu = menuLevelDown(menu, 0); 
+	menu = menuLevelDown(menu, 0);
 	menu->m_content.operation(); //"1"
 	menu = menuLevelDown(menu, 0);
 	menu->m_content.operation(); //"2"

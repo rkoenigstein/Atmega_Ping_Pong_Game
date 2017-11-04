@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+ * simple dummy functions for testing of the menu
+ */
+
 void printDumb(void)
 {
 	printf("I am dumb\n");
