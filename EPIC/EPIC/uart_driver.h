@@ -1,11 +1,11 @@
 #ifndef UART_driver
 #define UART_driver
 
+#include <avr/io.h>
+
 #define BAUDRATE 9600
 #define FOSC 16000000
 #define UBRR FOSC/16/BAUDRATE-1
-
-#include <avr/io.h>
 
 /* initialize uart to 9600 8N1 (9600 Baud/Bit rate, 8 Bits data, no parity, 1 stop bit */
 void uart_init(void);

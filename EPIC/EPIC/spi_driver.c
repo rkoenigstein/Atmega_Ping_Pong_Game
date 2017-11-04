@@ -2,11 +2,19 @@
 #include <avr/interrupt.h>
 #include "spi_driver.h"
 
-#define DD_MOSI DDB5
-#define DD_MISO DDB6
-#define DDR_SPI DDRB
-#define DD_SCK DDB7
-#define DD_SS DDB4
+#ifdef ATMEGA2560
+	#define DD_MOSI DDB2
+	#define DD_MISO DDB3
+	#define DDR_SPI DDRB
+	#define DD_SCK DDB1
+	#define DD_SS DDB0
+#else
+	#define DD_MOSI DDB5
+	#define DD_MISO DDB6
+	#define DDR_SPI DDRB
+	#define DD_SCK DDB7
+	#define DD_SS DDB4
+#endif
 
 void spi_Slaveinit(void)
 {

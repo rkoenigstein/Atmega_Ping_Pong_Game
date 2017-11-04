@@ -18,7 +18,11 @@
 #define RX_STATUS				0b10110000
 #define BIT_MODIFY			0b00000101
 
-#define SPI_SS PB4
+#ifdef ATMEGA2560
+	#define SPI_SS DDB7
+#else
+	#define SPI_SS PB4
+#endif
 
 void mcp_reset(void)
 {

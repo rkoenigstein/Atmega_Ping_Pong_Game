@@ -1,4 +1,5 @@
-#include "uart_driver_2560.h"
+#define ATMEGA2560
+#include "uart_driver.h"
 #include "MCP2515.h"
 
 #define F_CPU 16000000
@@ -8,7 +9,7 @@
 
 //#include <avr/delay.h>
 
-#include "can_driver_2560.h"
+#include "can_driver.h"
 #include "timer_driver.h"
 #include "ir_driver.h"
 #include "motor_control.h"

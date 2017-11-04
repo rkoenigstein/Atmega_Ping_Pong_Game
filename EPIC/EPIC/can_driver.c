@@ -5,7 +5,11 @@
 #include "spi_driver.h"
 #include "uart_driver.h"
 #include <stdio.h>
-#define F_CPU 4915200 // Clock speed
+#ifdef ATMEGA2560
+	#define F_CPU 16000000 // Clock speed
+#else
+	#define F_CPU 4915200 // Clock speed
+#endif
 
 #include <util/delay.h>
 
@@ -16,14 +20,15 @@
 #define RX0IF 0x00
 #define BFPCTRL 0x0C
 
-
-
 volatile int msg_received_flag = 0;
 
 void can_init(void)
 {
 	//initialize mcp
 	mcp_init();
+
+	//ensure to be in config mode
+	mcp_write(MCP_CANCTRL, MODE_MASK & MODE_CONFIG);
 
 	//turn off filters and rollover for receive buffer 0
 	mcp_write(MCP_RXB0CTRL, NO_FILTERS_AND_MASKS);
@@ -36,8 +41,14 @@ void can_init(void)
 
 	//enable CAN interrupts on the MCU
 	cli();
-	MCUCR |= (1<<ISC11);
-	GICR |= (1<<INT0);
+	#ifdef ATMEGA2560
+		EICRB &= ~(1<<ISC31);
+		EICRB &= ~(1<<ISC30);
+		EIMSK |= (1<<INT3);
+	#else
+		MCUCR |= (1 << ISC11);
+		GICR |= (1 << INT0);
+	#endif
 	sei();
 }
 
@@ -95,7 +106,7 @@ can_message can_data_receive(void)
 	msg_received_flag = 0;
 
 	//allow new message to be received into the buffer
-	mcp_bit_modify(MCP_RX0IF, MCP_CANINTF, 0x00);
+	mcp_write(MCP_CANINTF, MCP_RX0IF & 0x00);
 
 	return can_msg;
 }
@@ -105,7 +116,7 @@ ISR(INT0_vect)
 {
 	//printf("Interrupted CAN!\n");
 	//clear interrupt bits for rx buffer 0
-	mcp_bit_modify(MCP_RX0IF, MCP_CANINTF, 0x00);
+	mcp_write(MCP_CANINTF, MCP_RX0IF & 0x00);
 
 	msg_received_flag = 1;
 }

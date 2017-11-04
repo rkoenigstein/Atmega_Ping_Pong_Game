@@ -12,13 +12,22 @@ void uart_init(void)
 	UCSR0B = (1 << RXEN0) | (1 << TXEN0);
 
 	//set UCSRC as accessed register, set number of character size to 8
-	UCSR0C = (1 << URSEL0) | (3 << UCSZ00);
+	#ifdef ATMEGA2560
+		UCSR0C = (3 << UCSZ00);
+	#else
+		UCSR0C = (1 << URSEL0) | (3 << UCSZ00);
+	#endif
 
 	//set number of stop bits to 1
 	UCSR0C &= (0 << USBS0);
 
 	//set connection to asynchronous
-	UCSR0C &= (0 << UMSEL0);
+	#ifdef ATMEGA2560
+		UCSR0C &= ~(1 << UMSEL00);
+		UCSR0C &= ~(1 << UMSEL01);
+	#else
+		UCSR0C &= (0 << UMSEL0);
+	#endif
 
 	//disable parity mode
 	UCSR0C &= (0 << UPM00);

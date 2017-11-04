@@ -29,7 +29,7 @@ bool can_transmit_complete(void);
 can_message can_data_receive(void);
 
 /* print CANSTAT and CANCRTL registers from MCP */
-void printRegisters();
+void printRegisters(void);
 
 /* test CAN in loopback mode */
 void CAN_test(void);
