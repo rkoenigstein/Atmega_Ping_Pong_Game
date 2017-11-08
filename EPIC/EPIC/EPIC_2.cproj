@@ -111,10 +111,10 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="can_driver_2560.c">
+    <Compile Include="can_driver.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="can_driver_2560.h">
+    <Compile Include="can_driver.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="data_fit.c">
@@ -126,12 +126,6 @@
     <Compile Include="EPIC_2.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="i2c_driver.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="i2c_driver.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="ir_driver.c">
       <SubType>compile</SubType>
     </Compile>
@@ -141,10 +135,10 @@
     <Compile Include="MCP2515.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="mcp_driver_2560.c">
+    <Compile Include="mcp_driver.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="mcp_driver_2560.h">
+    <Compile Include="mcp_driver.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="motor_control.c">
@@ -153,16 +147,19 @@
     <Compile Include="motor_control.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="Parameters.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="servo_driver.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="servo_driver.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="spi_driver_2560.c">
+    <Compile Include="spi_driver.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="spi_driver_2560.h">
+    <Compile Include="spi_driver.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="timer_driver.c">
@@ -177,10 +174,10 @@
     <Compile Include="TWI_Master.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="uart_driver_2560.c">
+    <Compile Include="uart_driver.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="uart_driver_2560.h">
+    <Compile Include="uart_driver.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

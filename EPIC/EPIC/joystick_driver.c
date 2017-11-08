@@ -3,19 +3,20 @@
 #include "joystick_driver.h"
 #include "adc_driver.h"
 #include "uart_driver.h"
+#include "data_fit.h"
 
 JOY_POS mid_point = { .x = 125, .y = 129};
 uint8_t margin = 15;
 
-void JOY_init()
+void USB_init()
 {
-	//set PIN 0 and 1 of port B as inputs
-	DDRB &= (0 << PB0) & (0 << PB1);
+	//set PIN 0 and 1 of port B as inputs for buttons
+	DDRB &= ~(1 << PB0) & ~(1 << PB1);
 }
 
 bool JOY_button(int button)
 {
-	return PORTB & (1 << button);
+	return PINB & (1 << button);
 }
 
 JOY_POS JOY_getPosition(void)
@@ -85,6 +86,7 @@ SLID SLID_getPosition(void)
 	SLID value;
 	value.l = ADC_read(SL_L);
 	value.r = ADC_read(SL_R);
+	//printf("left %d, right %d \n", value.l, value.r);
 	return value;
 }
 

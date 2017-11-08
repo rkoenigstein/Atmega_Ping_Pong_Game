@@ -48,7 +48,7 @@ void mcp_init(void)
 	mcp_reset();
 }
 
-void mcp_write(uint8_t address, char data)
+void mcp_write(uint8_t address, uint8_t data)
 {
 	selectSlave();
 

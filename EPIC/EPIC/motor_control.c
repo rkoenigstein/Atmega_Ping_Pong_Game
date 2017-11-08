@@ -73,7 +73,7 @@ void setMotorSpeed(void)
 }
 void setMotorPosition(JOY_POS current_position)
 {
-	current_joy_pos = (current_position.y - 127) << 8;
+	current_joy_pos = (current_position.y - 127);// << 8;
 	global_current_direction = current_position.dir;
 }
 
@@ -151,38 +151,53 @@ void resetEncoder(void)
 	PORTH |= (1 << PH6);
 }
 
+void shoot_init(void)
+{
+	DDRL |= (1 << PL6);
+}
+
 void PIMotorController(void)
 {
-	static int esum = 0;
-
+	global_motor_speed=0x60;
+	setMotorDir(current_joy_pos > 0);
+	
+	/*static int esum = 0;
 	int encoder = getEncoderValue();
-	//printf("encoder: %d\n", encoder);
+	int16_t e = encoder - current_joy_pos;
 	if(global_current_direction == NEUTRAL)
 	{
-		current_joy_pos = 0;
-		esum = 0;
+		return;
 	}
-	int16_t e = encoder - current_joy_pos;
+	
 	if(old_joy_pos != current_joy_pos)
 		esum += e;
-
+	//printf("e: %d \n", e);
 	int16_t new_val = (Kp * e + Ki * T * esum);
 	//printf("new val: %d \n", (uint8_t) abs(new_val));
 	global_motor_speed = (uint8_t) abs(new_val);
-	setMotorDir(new_val > 0);
+	setMotorDir(new_val > 0);*/
 
 	//printf("analog: %d \n", global_motor_speed);
-	unsigned char msg[3] = {0x50, 0x0, global_motor_speed};
-	TWI_Start_Transceiver_With_Data(msg, 3);
-	old_joy_pos = current_joy_pos;
+	if(global_current_direction != NEUTRAL)
+	{
+		unsigned char msg[3] = {0x50, 0x0, global_motor_speed};
+		TWI_Start_Transceiver_With_Data(msg, 3);
+		old_joy_pos = current_joy_pos;
+	}
+	else
+	{
+		unsigned char msg[3] = {0x50, 0x0, 0};
+		TWI_Start_Transceiver_With_Data(msg, 3);
+		old_joy_pos = current_joy_pos;
+	}
+	
 }
 
 void shoot(void)
 {
-	DDRL |= (1 << PL7);
-	PORTL &= ~(1 << PL7);
+	PORTL |= (1 << PL6);
 	_delay_ms(50);
-	PORTL |= (1 << PL7);
+	PORTL &= ~(1 << PL6);
 }
 
 /* interrupt service routine for timer overflow to update motor control */

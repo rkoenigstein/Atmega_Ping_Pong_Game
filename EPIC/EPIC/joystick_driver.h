@@ -3,8 +3,8 @@
 
 #define JOY_H 4
 #define JOY_V 5
-#define SL_L 6
-#define SL_R 7
+#define SL_L 7
+#define SL_R 6// 7
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -18,14 +18,14 @@ typedef struct
 
 typedef struct
 {
-	int l;
-	int r;
+	uint8_t l;
+	uint8_t r;
 } SLID;
 
 enum JOY_DIR {NEUTRAL,LEFT, RIGHT, UP, DOWN, LEFT_UP, LEFT_DOWN, RIGHT_UP, RIGHT_DOWN};
 
 /* initializes the I/O pins of the MCU where the joystick is connected */
-void JOY_init(void);
+void USB_init(void);
 
 /* returns whether the joystick button is pressed or not */
 bool JOY_button(int button);

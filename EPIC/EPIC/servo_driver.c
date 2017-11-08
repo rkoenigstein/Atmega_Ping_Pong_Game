@@ -1,5 +1,5 @@
 #include "servo_driver.h"
-#include "uart_driver_2560.h"
+#include "uart_driver.h"
 
 uint8_t calculateDutyCycle(uint8_t joy_x_pos)
 {

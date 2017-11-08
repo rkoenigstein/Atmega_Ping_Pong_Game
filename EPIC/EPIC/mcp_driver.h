@@ -1,6 +1,7 @@
-
 #ifndef MCP_DRIVER_H_
 #define MCP_DRIVER_H_
+
+#include "Parameters.h"
 
 /* resets MCP by SPI interface */
 void mcp_reset(void);
@@ -12,7 +13,7 @@ void mcp_init(void);
 uint8_t mcp_read(uint8_t address);
 
 /* writes data to MCP */
-void mcp_write(uint8_t address, char data);
+void mcp_write(uint8_t address, uint8_t data);
 
 /* reads MCP status */
 uint8_t mcp_read_status(void);

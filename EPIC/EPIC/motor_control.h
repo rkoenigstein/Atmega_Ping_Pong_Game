@@ -4,8 +4,9 @@
 #include <avr/io.h>
 #include <stdbool.h>
 #include <avr/interrupt.h>
+#include "Parameters.h"
 
-#define Kp 0.1
+#define Kp 1
 #define Ki 0.5
 #define T 0.00102 //integral time in [ms] -> counter overflow
 
@@ -26,6 +27,9 @@ enum JOY_DIR {NEUTRAL,LEFT, RIGHT, UP, DOWN, LEFT_UP, LEFT_DOWN, RIGHT_UP, RIGHT
 
 /* enables motor and initializes timer for motor control */
 void motor_init(void);
+
+/* set PL6 as output */
+void shoot_init(void);
 
 /* initializes timer for updating motor control */
 void PID_timer_init (void);

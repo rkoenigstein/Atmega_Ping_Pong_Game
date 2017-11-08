@@ -37,18 +37,16 @@ SUBDIRS :=
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
-../adc.c \
 ../can_driver.c \
 ../data_fit.c \
+../EPIC_2.c \
+../ir_driver.c \
 ../mcp_driver.c \
+../motor_control.c \
+../servo_driver.c \
 ../spi_driver.c \
-../dummy.c \
-../graphic.c \
-../menu.c \
-../EPIC.c \
-../joystick_driver.c \
-../oled_driver.c \
-../sram.c \
+../timer_driver.c \
+../TWI_Master.c \
 ../uart_driver.c
 
 
@@ -59,68 +57,60 @@ ASM_SRCS +=
 
 
 OBJS +=  \
-adc.o \
 can_driver.o \
 data_fit.o \
+EPIC_2.o \
+ir_driver.o \
 mcp_driver.o \
+motor_control.o \
+servo_driver.o \
 spi_driver.o \
-dummy.o \
-graphic.o \
-menu.o \
-EPIC.o \
-joystick_driver.o \
-oled_driver.o \
-sram.o \
+timer_driver.o \
+TWI_Master.o \
 uart_driver.o
 
 OBJS_AS_ARGS +=  \
-adc.o \
 can_driver.o \
 data_fit.o \
+EPIC_2.o \
+ir_driver.o \
 mcp_driver.o \
+motor_control.o \
+servo_driver.o \
 spi_driver.o \
-dummy.o \
-graphic.o \
-menu.o \
-EPIC.o \
-joystick_driver.o \
-oled_driver.o \
-sram.o \
+timer_driver.o \
+TWI_Master.o \
 uart_driver.o
 
 C_DEPS +=  \
-adc.d \
 can_driver.d \
 data_fit.d \
+EPIC_2.d \
+ir_driver.d \
 mcp_driver.d \
+motor_control.d \
+servo_driver.d \
 spi_driver.d \
-dummy.d \
-graphic.d \
-menu.d \
-EPIC.d \
-joystick_driver.d \
-oled_driver.d \
-sram.d \
+timer_driver.d \
+TWI_Master.d \
 uart_driver.d
 
 C_DEPS_AS_ARGS +=  \
-adc.d \
 can_driver.d \
 data_fit.d \
+EPIC_2.d \
+ir_driver.d \
 mcp_driver.d \
+motor_control.d \
+servo_driver.d \
 spi_driver.d \
-dummy.d \
-graphic.d \
-menu.d \
-EPIC.d \
-joystick_driver.d \
-oled_driver.d \
-sram.d \
+timer_driver.d \
+TWI_Master.d \
 uart_driver.d
 
-OUTPUT_FILE_PATH +=EPIC.elf
+OUTPUT_FILE_PATH +=EPIC_2.elf
 
-OUTPUT_FILE_PATH_AS_ARGS +=EPIC.elf
+OUTPUT_FILE_PATH_AS_ARGS +=EPIC_2.elf
 
 ADDITIONAL_DEPENDENCIES:=
 
@@ -155,14 +145,10 @@ LINKER_SCRIPT_DEP+=
 
 
 
-
-
-
-
 ./%.o: .././%.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 4.8.1
-	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I".."  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=atmega162 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
@@ -191,13 +177,13 @@ all: $(OUTPUT_FILE_PATH) $(ADDITIONAL_DEPENDENCIES)
 $(OUTPUT_FILE_PATH): $(OBJS) $(USER_OBJS) $(OUTPUT_FILE_DEP) $(LIB_DEP) $(LINKER_SCRIPT_DEP)
 	@echo Building target: $@
 	@echo Invoking: AVR/GNU Linker : 4.8.1
-	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE) -o$(OUTPUT_FILE_PATH_AS_ARGS) $(OBJS_AS_ARGS) $(USER_OBJS) $(LIBS) -Wl,-Map="EPIC.map" -Wl,--start-group -Wl,-lm  -Wl,--end-group -Wl,--gc-sections -mmcu=atmega162  
+	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE) -o$(OUTPUT_FILE_PATH_AS_ARGS) $(OBJS_AS_ARGS) $(USER_OBJS) $(LIBS) -Wl,-Map="EPIC_2.map" -Wl,--start-group -Wl,-lm  -Wl,--end-group -Wl,--gc-sections -mrelax -mmcu=atmega2560  
 	@echo Finished building target: $@
-	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O ihex -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures  "EPIC.elf" "EPIC.hex"
-	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -j .eeprom  --set-section-flags=.eeprom=alloc,load --change-section-lma .eeprom=0  --no-change-warnings -O ihex "EPIC.elf" "EPIC.eep" || exit 0
-	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objdump.exe" -h -S "EPIC.elf" > "EPIC.lss"
-	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O srec -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures "EPIC.elf" "EPIC.srec"
-	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-size.exe" "EPIC.elf"
+	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O ihex -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures  "EPIC_2.elf" "EPIC_2.hex"
+	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -j .eeprom  --set-section-flags=.eeprom=alloc,load --change-section-lma .eeprom=0  --no-change-warnings -O ihex "EPIC_2.elf" "EPIC_2.eep" || exit 0
+	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objdump.exe" -h -S "EPIC_2.elf" > "EPIC_2.lss"
+	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O srec -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures "EPIC_2.elf" "EPIC_2.srec"
+	"C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-size.exe" "EPIC_2.elf"
 	
 	
 
@@ -209,5 +195,5 @@ $(OUTPUT_FILE_PATH): $(OBJS) $(USER_OBJS) $(OUTPUT_FILE_DEP) $(LIB_DEP) $(LINKER
 clean:
 	-$(RM) $(OBJS_AS_ARGS) $(EXECUTABLES)  
 	-$(RM) $(C_DEPS_AS_ARGS)   
-	rm -rf "EPIC.elf" "EPIC.a" "EPIC.hex" "EPIC.lss" "EPIC.eep" "EPIC.map" "EPIC.srec" "EPIC.usersignatures"
+	rm -rf "EPIC_2.elf" "EPIC_2.a" "EPIC_2.hex" "EPIC_2.lss" "EPIC_2.eep" "EPIC_2.map" "EPIC_2.srec" "EPIC_2.usersignatures"
 	

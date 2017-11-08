@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "Parameters.h"
 #include "uart_driver.h"
 #include "sram.h"
 #include "adc_driver.h"
@@ -15,10 +16,9 @@
 
 //#include "graphic.h"
 
-enum CAN_IDS {JOY};
-
 MenuNode* menu_main;
 JOY_POS joy_pos, old_joy_pos;
+SLID slid_pos, old_slid_pos;
 uint8_t current_selection = 0;
 
 void main_init(void)
@@ -26,13 +26,14 @@ void main_init(void)
 	uart_init();
 	sram_init();
 	adc_init();
-	JOY_init();
+	USB_init();
 	can_init();
 	sei();
 	oled_init();
 	//menu_main = getMenuRoot();
 	printf("INIT DONE\n");
-}
+	_delay_ms(1000);
+	}
 
 /* interrupt service routine catching undefined interrupts */
 ISR(BADISR_vect)
@@ -46,6 +47,26 @@ void sendJoyPos(void)
 	can_message_send(joy_msg);
 }
 
+void sendButton(void)
+{
+	uint8_t data_b = R;
+	
+	//printf("LEFT=%d, RIGHT=%d\n",JOY_button(L), JOY_button(R));
+	if(!JOY_button(R) && !JOY_button(L))
+		return;
+	if(JOY_button(L))
+		data_b = L;
+	can_message button_msg = { .id = BUTTONS, .length = 1, .data = data_b};
+	can_message_send(button_msg);
+	printf("CAN Button sent\n");
+}
+
+void sendSliderPos(void)
+{
+	can_message slid_msg = { .id = SLIDERS, .length = 2, .data = {slid_pos.r, slid_pos.l}};
+	can_message_send(slid_msg);
+}
+
 int main(void)
 {
 	main_init();
@@ -56,13 +77,23 @@ int main(void)
 	while(1)
 	{
 		joy_pos = JOY_getPosition();
+		slid_pos = SLID_getPosition();
 		if(joy_pos.x > old_joy_pos.x + 10 || joy_pos.y > old_joy_pos.y + 10 || joy_pos.x < old_joy_pos.x - 10 || joy_pos.y < old_joy_pos.y - 10)
+		{
 			sendJoyPos();
-		_delay_ms(100);
+			//printf("Sending ")
+		}
+		_delay_ms(10);
+			sendButton();
+		_delay_ms(10);
+		if(slid_pos.r > old_slid_pos.r + 10 || slid_pos.l > old_slid_pos.l + 10 || slid_pos.r < old_slid_pos.r - 10 || slid_pos.l < old_slid_pos.l - 10)
+			sendSliderPos();
+		_delay_ms(10);
 		old_joy_pos = joy_pos;
+		old_slid_pos = slid_pos;
 	}
 
-	while(0)
+	/*while(0)
 	{
 
 		joy_pos = JOY_getPosition();
@@ -114,7 +145,7 @@ int main(void)
 		printMenu(menu_main);
 		print_selection(current_selection);
 		_delay_ms(300);
-	}
+	}*/
 
 
 	//testCANconnection();
@@ -139,6 +170,6 @@ void testCANconnection(void)
 		printf("Waiting for mz message\n");
 		node_2 = can_data_receive();
 		printf("Got it\n");
-		printf("CAN id: %d, CAN data length: %d, CAN data: %c, %c, %c, %c \n",node_2.id, node_2.length, node_2.data[0], node_2.data[1], node_2.data[2], node_2.data[3],node_2.data[4]);
+		printf("CAN id: %d, CAN data length: %d, CAN data: %c, %c, %c, %c \n",node_2.id, node_2.length, node_2.data[0], node_2.data[1], node_2.data[2], node_2.data[3]);
 	}
 }

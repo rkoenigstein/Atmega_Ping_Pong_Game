@@ -42,9 +42,9 @@ void can_init(void)
 	//enable CAN interrupts on the MCU
 	cli();
 	#ifdef ATMEGA2560
-		EICRB &= ~(1<<ISC31);
-		EICRB &= ~(1<<ISC30);
-		EIMSK |= (1<<INT3);
+		EICRB &= ~(1 << ISC31);
+		EICRB &= ~(1 << ISC30);
+		EIMSK |= (1 << INT3);
 	#else
 		MCUCR |= (1 << ISC11);
 		GICR |= (1 << INT0);
@@ -112,14 +112,25 @@ can_message can_data_receive(void)
 }
 
 //interrupt service routine clearing the receive buffer interrupt bit to receive next message
-ISR(INT0_vect)
-{
-	//printf("Interrupted CAN!\n");
-	//clear interrupt bits for rx buffer 0
-	mcp_write(MCP_CANINTF, MCP_RX0IF & 0x00);
+#ifdef ATMEGA2560
+	ISR(INT3_vect)
+	{
+		//printf("interrupted CAN!\n");
+		//clear interrupt bits for rx buffer 0
+		mcp_write(MCP_CANINTF, MCP_RX0IF & 0x00);
+		
+		msg_received_flag = 1;
+	}
+#else
+	ISR(INT0_vect)
+	{
+		//printf("Interrupted CAN!\n");
+		//clear interrupt bits for rx buffer 0
+		mcp_write(MCP_CANINTF, MCP_RX0IF & 0x00);
 
-	msg_received_flag = 1;
-}
+		msg_received_flag = 1;
+	}	
+#endif
 
 void CAN_test(void)
 {

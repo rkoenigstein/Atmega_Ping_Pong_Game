@@ -4,34 +4,36 @@
 
 void uart_init(void)
 {
+	int ubrr = MYUBRR;
 	//set baudrate to 9600
-	UBRR0H = (unsigned char) (UBRR >> 8);
-	UBRR0L = (unsigned char) UBRR;
+	UBRR0H = (unsigned char) (ubrr >> 8);
+	UBRR0L = (unsigned char) ubrr;
 
 	//enable receiver and transmitter
-	UCSR0B = (1 << RXEN0) | (1 << TXEN0);
+	UCSR0B |= (1 << RXEN0) | (1 << TXEN0);
 
 	//set UCSRC as accessed register, set number of character size to 8
 	#ifdef ATMEGA2560
-		UCSR0C = (3 << UCSZ00);
+		UCSR0C |= (3 << UCSZ00);
 	#else
-		UCSR0C = (1 << URSEL0) | (3 << UCSZ00);
+		UCSR0C |= (1 << URSEL0) | (3 << UCSZ00);
 	#endif
 
 	//set number of stop bits to 1
-	UCSR0C &= (0 << USBS0);
+	UCSR0C &= ~(1 << USBS0);
 
 	//set connection to asynchronous
 	#ifdef ATMEGA2560
 		UCSR0C &= ~(1 << UMSEL00);
 		UCSR0C &= ~(1 << UMSEL01);
 	#else
-		UCSR0C &= (0 << UMSEL0);
+		UCSR0C &= ~(1 << UMSEL0);
 	#endif
 
 	//disable parity mode
-	UCSR0C &= (0 << UPM00);
-	UCSR0C &= (0 << UPM10);
+	UCSR0C &= ~(1 << UPM00);
+	UCSR0C &= ~(1 << UPM10);
+	
 	fdevopen(uart_putc, uart_getc);
 }
 
@@ -67,19 +69,19 @@ void uart_putstring(unsigned char* name)
 
 void TEST_reciver_transmitter_string(void)
 {
- uart_init();
+	 uart_init();
 
- unsigned char c;
- unsigned const char* hello_string = "Hello World";
+	 unsigned char c;
+	 unsigned const char* hello_string = "Hello World";
 
- uart_putstring(hello_string);
+	 uart_putstring(hello_string);
 
- printf("Please enter something:");
+	 printf("Please enter something:");
 
- while(1)
- {
-	 c = uart_getc();
-	 uart_putc(c);
-	 _delay_ms(100);
- }
+	 while(1)
+	 {
+		 c = uart_getc();
+		 uart_putc(c);
+		 _delay_ms(100);
+	 }
 }

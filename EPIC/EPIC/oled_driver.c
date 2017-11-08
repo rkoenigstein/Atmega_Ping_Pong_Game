@@ -154,7 +154,6 @@ void oled_test()
 
 void printGreetings(void)
 {
-	int counter = 0;
 	position pos = {.page = 3, .column = 2};
 	print_string_to_buffer("I want to greet ", pos);
 	pos.page++;
