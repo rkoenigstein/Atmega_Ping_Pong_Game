@@ -154,7 +154,7 @@ void oled_test()
 
 void printGreetings(void)
 {
-	position pos = {.page = 3, .column = 2};
+	position pos = { .page = 3, .column = 2 };
 	print_string_to_buffer("I want to greet ", pos);
 	pos.page++;
 	print_string_to_buffer("grandma, because", pos);
@@ -162,6 +162,25 @@ void printGreetings(void)
 	print_string_to_buffer(" she is soooooooo pretty", pos);
 	print_buffer();
 	_delay_ms(1000);
+}
+
+void print_thumb(void)
+{
+	position pos = { .page = 0, .column =0 };
+	print_string_to_buffer("    /(|         ", pos);
+	pos.page++;
+	print_string_to_buffer("   (  :         ", pos);
+	pos.page++;
+	print_string_to_buffer("  __\\  \\  _____", pos);
+	pos.page++;
+	print_string_to_buffer(" (____)  `|     ", pos);
+	pos.page++;
+	print_string_to_buffer("(____)|   |     ", pos);
+	pos.page++;
+	print_string_to_buffer(" (____).__|     ", pos);
+	pos.page++;
+	print_string_to_buffer("  (___)__.|_____", pos);
+	print_buffer();
 }
 
 void printMenu(MenuNode* menu_entries)
@@ -190,9 +209,6 @@ void printMenu(MenuNode* menu_entries)
 
 void sayHello(void)
 {
-	clear_buffer();
-	print_buffer();
-	_delay_ms(2000);
 	position pos = { .page = 0, .column =0 };
 	print_string_to_buffer(" .------------. ", pos);
 	pos.page++;
@@ -207,9 +223,6 @@ void sayHello(void)
 	print_string_to_buffer("       |__(O.o) ", pos);
 	pos.page++;
 	print_string_to_buffer("          (> <) ", pos);
-	print_buffer();
-	_delay_ms(2000);
-	clear_buffer();
 	print_buffer();
 }
 

@@ -4,12 +4,24 @@
 #include <util/delay.h>
 
 //include external functions passed to the menu
+extern void song_harry_potter(void);
+extern void song_tetris(void);
+extern void song_cantina_band(void);
+extern void song_pokemon(void);
+
 extern void printGreetings(void);
 extern void print1(void);
 extern void print2(void);
 extern void print3(void);
 extern void print4(void);
 extern void printMain(void);
+
+extern void storeHighscore(void);
+extern void resetHighscore(void);
+extern void calibrateLeftSlider(void);
+extern void calibrateRightSlider(void);
+extern void calibrateJoystick(void);
+extern void showHighscore(void);
 
 static MenuNode* _menu;
 
@@ -53,12 +65,19 @@ void createMenu(void)
 	_menu->m_submenus[0] = createMenuNode("Games", NULL, 2);
 	_menu->m_submenus[0]->m_submenus[0] = createMenuNode("PingPong", &print2, 0);
 	_menu->m_submenus[0]->m_submenus[1] = createMenuNode("PingPang", &print1, 0);
-	_menu->m_submenus[1] = createMenuNode("Players", NULL, 1);
-	_menu->m_submenus[1]->m_submenus[0] = createMenuNode("Create User", &print2, 0);
-	_menu->m_submenus[2] = createMenuNode("Settings", NULL, 1);
-	_menu->m_submenus[2]->m_submenus[0] = createMenuNode("Calibrate Joystick", &print2, 0);
-	_menu->m_submenus[3] = createMenuNode("Dummy", NULL, 1);
-	_menu->m_submenus[3]->m_submenus[0] = createMenuNode("Printdummy", &printGreetings, 0);
+	_menu->m_submenus[1] = createMenuNode("Highscore", &showHighscore, 0);
+	_menu->m_submenus[2] = createMenuNode("Settings", NULL, 3);
+	_menu->m_submenus[2]->m_submenus[0] = createMenuNode("Store Highscore", &storeHighscore, 0);
+	_menu->m_submenus[2]->m_submenus[1] = createMenuNode("Reset Highscore", &resetHighscore, 0);
+	_menu->m_submenus[2]->m_submenus[2] = createMenuNode("Calibrate Joystick", &calibrateJoystick, 0);
+	_menu->m_submenus[2]->m_submenus[3] = createMenuNode("Calibrate Sliders", NULL, 2);
+	_menu->m_submenus[2]->m_submenus[2]->m_submenus[0] = createMenuNode("Left Slider", &calibrateLeftSlider, 0);
+	_menu->m_submenus[2]->m_submenus[2]->m_submenus[1] = createMenuNode("Right Slider", &calibrateRightSlider, 0);
+	_menu->m_submenus[3] = createMenuNode("Songs", NULL, 4);
+	_menu->m_submenus[3]->m_submenus[0] = createMenuNode("Harry Potter", &play_song, 0);
+	_menu->m_submenus[3]->m_submenus[1] = createMenuNode("Tetris", &play_song, 0);
+	_menu->m_submenus[3]->m_submenus[2] = createMenuNode("Cantina Band", &play_song, 0);
+	_menu->m_submenus[3]->m_submenus[3] = createMenuNode("Pokemon", &play_song, 0);
 	assignParents(_menu);
 	printf("PARENTS ASSIGNED\n");
 

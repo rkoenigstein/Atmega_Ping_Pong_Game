@@ -15,6 +15,7 @@
 #include "motor_control.h"
 #include "servo_driver.h"
 #include "TWI_Master.h"
+#include "music.h"
 #include <stdbool.h>
 #include <avr/sleep.h>
 
@@ -37,6 +38,7 @@ void main_init (void)
 	sei();
 	motor_init();
 	sleep_init();
+	music_init();
 	printf("INIT DONE\n");
 }
 
@@ -51,16 +53,16 @@ void go_to_sleep (void)
 {
 	// set SE to one
 	SMCR |= (1 << SE);
-	
+
 	//Check interrupts enable
 	sei();
-	
+
 	//sleep
 	sleep_cpu();
-	
+
 	//disable SE
 	SMCR &= ~(1 << SE);
-	
+
 }
 void update_OCR(uint8_t joy_x_pos)
 {
@@ -88,12 +90,12 @@ void updateScore(void)
 
 int main(void)
  {
-	
+
 	main_init();
 	_delay_ms(1000);
 	int enc = getEncoderValue();
 	printf("enc: %d\n", enc);
-	
+
 	while(1)
 	{
 		//printf("hey\n");
@@ -103,7 +105,7 @@ int main(void)
 		_delay_ms(100);
 
 		can_msg = can_data_receive();
-		
+
 		switch(can_msg.id)
 		{
 			case JOY:
@@ -160,7 +162,12 @@ int main(void)
 				printf("Woke up\n");
 				break;
 			}
-			
+			case PLAY_SONG:
+			{
+				printf("Playing music\n");
+				play_song(can_msg.data[0]);
+				break;
+			}
 			default:
 			{
 				printf("CAN ID unknown\n");
@@ -169,7 +176,8 @@ int main(void)
 		}
 
     }
-	
+
+	TEST_music();
 	//test_shoot();
 }
 

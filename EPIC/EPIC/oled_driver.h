@@ -44,6 +44,9 @@ void clear_buffer(void);
 /* sets all buffer entries to high */
 void ones_buffer(void);
 
+/* prints thumbs up to display */
+void print_thumb(void);
+
 /* sets the current page, which the OLED writes to */
 void oled_set_page(uint8_t page);
 

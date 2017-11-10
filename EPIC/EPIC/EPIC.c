@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <string.h>
 #include "Parameters.h"
 #include "uart_driver.h"
 #include "sram.h"
@@ -20,6 +21,10 @@ MenuNode* menu_main;
 JOY_POS joy_pos, old_joy_pos;
 SLID slid_pos, old_slid_pos;
 uint8_t current_selection = 0;
+
+bool highscore_activated = true;
+
+uint16_t highscore[7] = { 0, 0, 0, 0, 0, 0, 0 };
 
 void main_init(void)
 {
@@ -50,7 +55,7 @@ void sendJoyPos(void)
 void sendButton(void)
 {
 	uint8_t data_b = R;
-	
+
 	//printf("LEFT=%d, RIGHT=%d\n",JOY_button(L), JOY_button(R));
 	if(!JOY_button(R) && !JOY_button(L))
 		return;
@@ -147,7 +152,6 @@ int main(void)
 		_delay_ms(300);
 	}*/
 
-
 	//testCANconnection();
 	//TEST_animation();
 	//CAN_test();
@@ -172,4 +176,84 @@ void testCANconnection(void)
 		printf("Got it\n");
 		printf("CAN id: %d, CAN data length: %d, CAN data: %c, %c, %c, %c \n",node_2.id, node_2.length, node_2.data[0], node_2.data[1], node_2.data[2], node_2.data[3]);
 	}
+}
+
+void send_song_CAN(uint8_t song)
+{
+	can_message song = { .id = PLAY_SONG, .length = 1, .data = {song} };
+	can_message_send(song);
+}
+
+void song_harry_potter(void)
+{
+	send_song_CAN(HARRY_POTTER);
+}
+
+void song_cantina_band(void)
+{
+	send_song_CAN(CANTINA_BAND);
+}
+
+void song_pokemon(void)
+{
+	send_song_CAN(POKEMON);
+}
+
+void song_tetris(void)
+{
+	send_song_CAN(TETRIS);
+}
+
+void showHighscore(void)
+{
+	position pos = { .page = 0, .column = 1 };
+	print_string_to_buffer("HIGHSCORE", pos);
+	pos.page++;
+	char place[1];
+	char high[7];
+
+	//prepare strings
+	for(int i = 0; i < 8; i++)
+	{
+		char entry[16];
+		strcpy(entry, "No. ");
+		strcpy(entry, itoa(i, place[i]));
+		strcpy(entry, ": ");
+		strcpy(entry, itoa(highscore[i], high[i]));
+		print_string_to_buffer(entry, pos);
+		pos.page++;
+	}
+	print_buffer();
+}
+
+void resetHighscore(void)
+{
+	for(int i = 0; i < 8; i++)
+		highscore[i] = 0;
+}
+
+void storeHighscore(void)
+{
+	position pos = { .page = 0, .column = 1 };
+	print_string_to_buffer("Highscore is", pos);
+	pos.page++;
+	if(highscore_activated)
+	{
+		print_string_to_buffer("activated. To", pos);
+		pos.page++;
+		print_string_to_buffer("deactivate,", pos);
+	}
+	else
+	{
+		print_string_to_buffer("deactivated.", pos);
+		pos.page++;
+		print_string_to_buffer("To activate,", pos);
+	}
+
+	pos.page++;
+	print_string_to_buffer("press left", pos);
+	pos.page++;
+	print_string_to_buffer("button.", pos);
+	while(!JOY_button(0));
+	highscore_activated = !highscore_activated;
 }
