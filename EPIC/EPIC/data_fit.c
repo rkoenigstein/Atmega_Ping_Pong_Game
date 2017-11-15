@@ -4,36 +4,34 @@
 
 #include "data_fit.h"
 
-int dim = 1;
+uint8_t dim = 1;
 
-int average(int data[MAX_DATA], int L)
+uint8_t average(uint8_t data[MAX_DATA], uint8_t L)
 {
-	int i = 0;
-	int sum = 0;
-	for(i = 0; i < L; i++)
+	uint16_t sum = 0;
+	for(uint8_t i = 0; i < L; i++)
 		sum += data[dim * i];
 	return sum / L;
 }
 
-int distance(int data, int average)
+uint8_t distance(uint8_t data, uint8_t average)
 {
-	int d = abs(data-average);
+	uint8_t d = abs(data-average);
 	//printf("\ndata=%d, avarage=%d disatnce=%d\n\n", data, avareage, d);
 	return d;
 }
 
-void order_data_distance(int data_dist[MAX_DATA][2], int L)
+void order_data_distance(uint8_t data_dist[MAX_DATA][2], uint8_t L)
 {
-	int temp_1 = 0;
-	int temp_2 = 0;
-	int j = 0;
-	int i = 0;
-	for(i = 0; i < L; i++)
+	uint8_t temp_1 = 0;
+	uint8_t temp_2 = 0;
+	
+	for(uint8_t i = 0; i < L; i++)
 	{
-		for(j = i + 1; j < L; j++)
+		for(uint8_t j = i + 1; j < L; j++)
 		{
 			if (data_dist[i][1] > data_dist[j][1])
-      {
+			{
 				temp_1 =  data_dist[i][1];
 				data_dist[i][1] = data_dist[j][1];
 				data_dist[j][1] = temp_1;
@@ -46,16 +44,15 @@ void order_data_distance(int data_dist[MAX_DATA][2], int L)
 
 }
 
-int data_fit(int data[MAX_DATA], int L, int n_iter, int lim, int n_elim)
+uint8_t data_fit(uint8_t data[MAX_DATA], uint8_t L, uint8_t n_iter, uint8_t lim, uint8_t n_elim)
 {
-	int data_dist[L][2];
-	int i = 0, j = 0;
+	uint8_t data_dist[L][2];
+	uint8_t i = 0, j = 0;
 	dim = 1;
-	int avar=average(data, L);
+	uint8_t avar=average(data, L);
 	for(i = 0; i < L; i++)
 	{
 		data_dist[i][0] = data[i];
-
 		data_dist[i][1] = distance(data[i], avar);
 	}
 	dim = 2;

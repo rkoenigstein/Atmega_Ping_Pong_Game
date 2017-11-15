@@ -14,13 +14,13 @@ void sram_init(void)
 
 void TEST_write_adress(void)
 {
-	int * a = 0x0fff;
+	int * a = (int *) 0x0fff;
 	while(1)
 	{
-		a = 0x0fff;
+		a = (int *) 0x0fff;
 		*a = 0xff;
 		_delay_ms(1000);
-		a = 0x0501;
+		a = (int *) 0x0501;
 		*a = 0x44;
 		_delay_ms(1000);
 	}
@@ -34,7 +34,7 @@ void TEST_GAL(void)
 	{
 		uart_putstring("TEST GAL PRESS ENTER \n");
 		while(b == -1){
-			a = 0x1800; // put the respective memory address which should be tested, here
+			a = (int *) 0x1800; // put the respective memory address which should be tested, here
 			//ADC: active low chip select
 			//OLED: active low chip select
 			//SRAM: active high chip select
@@ -51,7 +51,7 @@ void TEST_ADC(void)
 	{
 		uart_putstring("TEST GAL PRESS ENTER \n");
 		while(b == -1){
-			a = 0x1400; // put the respective memory address which should be tested, here
+			a = (int *) 0x1400; // put the respective memory address which should be tested, here
 			//ADC: active low chip select
 			//OLED: active low chip select
 			//SRAM: active high chip select

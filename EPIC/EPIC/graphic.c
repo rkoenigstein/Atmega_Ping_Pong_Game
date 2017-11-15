@@ -1,12 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <util/delay.h>
 #include "joystick_driver.h"
 #include "oled_driver.h"
 #include "graphic.h"
 
-volatile uint8_t* display_buffer=0x1800;
+#ifdef ATMEGA2560
+	#define F_CPU 16000000
+#else
+	#define F_CPU 4915200
+#endif
+#include <util/delay.h>
+
+volatile uint8_t* display_buffer = (uint8_t *) 0x1800;
 
 /* takes the Ly vlaue of a rectangle and convert it to a char */
 uint8_t Ly_2_char(int start, int Ly)
@@ -41,28 +47,28 @@ void draw_rectangle_buffer(RECT rect)
     for(i = rect.pos.x; i < rect.Lx + rect.pos.x; i++)
       for(j = rect.pos.y; j < rect.Ly + rect.pos.y; j++)
       {
-		      current.x = i;
-    			current.y = j;
-    			switch(rect.full)
-    			{
-    				case(FULL):
-    				{
-    					draw_one_bit_buffer(current);
-              break;
-    				}
-    				case(RECT_EMPT):
-    				{
-    					if(((i == rect.pos.x) || (j == rect.pos.y)) || ((i == rect.Lx + rect.pos.x - 1) || (j == rect.Ly + rect.pos.y - 1)))
-    						draw_one_bit_buffer(current);
-              break;
-    				}
-    				case(TRI_EMPT):
-    				{
-    					if(((i == rect.pos.x) && (j == rect.pos.y)) || ((i == rect.Lx + rect.pos.x - 1) && (j == rect.Ly + rect.pos.y - 1)))
-    						draw_one_bit_buffer(current);
-              break;
-    				}
-          }
+		current.x = i;
+		current.y = j;
+		switch(rect.full)
+		{
+			case(FULL):
+			{
+				draw_one_bit_buffer(current);
+				break;
+			}
+			case(RECT_EMPT):
+			{
+				if(((i == rect.pos.x) || (j == rect.pos.y)) || ((i == rect.Lx + rect.pos.x - 1) || (j == rect.Ly + rect.pos.y - 1)))
+				draw_one_bit_buffer(current);
+				break;
+			}
+			case(TRI_EMPT):
+			{
+				if(((i == rect.pos.x) && (j == rect.pos.y)) || ((i == rect.Lx + rect.pos.x - 1) && (j == rect.Ly + rect.pos.y - 1)))
+				draw_one_bit_buffer(current);
+				break;
+			}
+			}
       }
 }
 
@@ -70,6 +76,11 @@ void draw_one_bit_buffer(POS bit)
 {
     uint8_t res = 0;
     uint8_t start = 0;
+	if(bit.y > 63 || bit.y < 0 || bit.x > 127 || bit.x < 0)
+	{
+		printf("POINT X=%d and y=%d OUTSIDE SCREEN\n", bit.x, bit.y);
+		return;
+	}
     start = start_calc(bit);
     res |= (1 << start);
 	  display_buffer[(int) bit.y / 8 * N + bit.x] |= res;
@@ -77,8 +88,6 @@ void draw_one_bit_buffer(POS bit)
 
 void draw_circle_buffer(CIRC circ) // DOESN'T WOOOOOORKKKK
 {
-    int i = 0;
-    int j = 0;
   	POS current = circ.pos;
   	POS distance;
   	draw_one_bit_buffer(circ.pos);
@@ -123,6 +132,7 @@ void draw_circle_buffer(CIRC circ) // DOESN'T WOOOOOORKKKK
 void draw_triangle_buffer(TRI tri)
 {
     RECT rect;
+	int i=0;
     rect.pos.x = tri.pos.x;
     rect.pos.y = tri.pos.y;
     rect.full = tri.full;
@@ -132,56 +142,64 @@ void draw_triangle_buffer(TRI tri)
         {
             rect.Lx = 1;
             rect.Ly = tri.l;
+			i = rect.Ly;
             do
             {
                 draw_rectangle_buffer(rect);
                 rect.Ly -= 2;
+				i -= 2;
                 rect.pos.y++;
                 rect.pos.x++;
             }
-            while(rect.Ly > 0);
+            while(i > 0);
             break;
         }
         case LEFT:
         {
             rect.Lx = 1;
             rect.Ly = tri.l;
-            do
+            i = rect.Ly;
+			do
             {
                 draw_rectangle_buffer(rect);
                 rect.Ly -= 2;
+				i -= 2;
                 rect.pos.y++;
                 rect.pos.x--;
             }
-            while(rect.Ly > 0);
+            while(i > 0);
             break;
         }
         case DOWN:
         {
             rect.Ly = 1;
             rect.Lx = tri.l;
+			i = rect.Lx;
             do
             {
                 draw_rectangle_buffer(rect);
                 rect.Lx -= 2;
+				i -= 2;
                 rect.pos.y++;
                 rect.pos.x++;
             }
-            while(rect.Lx > 0);
+            while(i > 0);
             break;
         }
         case UP:
         {
             rect.Ly = 1;
             rect.Lx = tri.l;
-            do
+            i = rect.Lx;
+			do
             {
                 draw_rectangle_buffer(rect);
                 rect.Lx -= 2;
+				i -= 2;
                 rect.pos.y--;
                 rect.pos.x++;
             }
-            while(rect.Lx > 0);
+            while(i > 0);
             break;
         }
         default:
@@ -200,7 +218,7 @@ void TEST_graphic(void)
 	rect.pos.y = 0;
 	rect.Lx = 10;
 	rect.Ly = 10;
-	rect.full = RECT_EMPT;
+	rect.full = TRI_EMPT;
 	draw_rectangle_buffer(rect);
 	rect.pos.x = 105;
 	rect.pos.y = 7;
@@ -211,20 +229,20 @@ void TEST_graphic(void)
 	tri.pos.y = 33;
 	tri.l = 33;
 	tri.ori = UP;
-	tri.full = TRI_EMPT;
+	tri.full = FULL;
 	draw_triangle_buffer(tri);
-	tri.ori = DOWN;
+	/*tri.ori = DOWN;
 	tri.pos.y = 43;
 	tri.pos.x = 70;
 	tri.full = FULL;
 	draw_triangle_buffer(tri);
-	//draw_triangle_buffer(tri);
+	//draw_triangle_buffer(tri);*/
 	/*CIRC circ;
 	circ.pos.x = 70;
 	circ.pos.y = 20;
 	circ.r = 15;
 	draw_circle_buffer(circ);*/
-	/*POS bit = { .x = 20, .y = 50 };
+	POS bit = { .x = 20, .y = 50 };
 	draw_one_bit_buffer(bit);
 	bit.x = 0;
 	bit.y = 0;
@@ -261,9 +279,9 @@ void TEST_graphic(void)
 	draw_one_bit_buffer(bit);
 	bit.x = 11;
 	bit.y = 11;
-	draw_one_bit_buffer(bit);*/
+	draw_one_bit_buffer(bit);
 	print_buffer();
-	//_delay_ms(2000);
+	_delay_ms(2000);
 	//print_buffer_to_serial();
 }
 void TEST_animation(void)

@@ -13,8 +13,8 @@ typedef struct MenuNode MenuNode;
 typedef struct MenuContent MenuContent;
 
 struct MenuContent {
-	 const char* title;
-	 void (*operation)(void);
+	uint8_t title_id;
+	void (*operation)(void);
 };
 
 struct MenuNode {

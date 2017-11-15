@@ -4,23 +4,22 @@
 #include <avr/io.h>
 #include <stdbool.h>
 #include <avr/interrupt.h>
-#include "Parameters.h"
 
-#define Kp 1
-#define Ki 0.5
+#define Kp 0.7
+#define Ki 0.1
 #define T 0.00102 //integral time in [ms] -> counter overflow
 
 typedef struct
 {
-	int x;
-	int y;
-	int dir;
+	uint8_t x;
+	uint8_t y;
+	uint8_t dir;
 } JOY_POS;
 
 typedef struct
 {
-	int l;
-	int r;
+	uint8_t l;
+	uint8_t r;
 } SLID;
 
 enum JOY_DIR {NEUTRAL,LEFT, RIGHT, UP, DOWN, LEFT_UP, LEFT_DOWN, RIGHT_UP, RIGHT_DOWN};

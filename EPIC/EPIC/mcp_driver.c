@@ -4,19 +4,24 @@
 #include "spi_driver.h"
 #include "uart_driver.h"
 #include "MCP2515.h"
+#include "Parameters.h"
 
-#define F_CPU 16000000 // Clock speed
+#ifdef ATMEGA2560
+	#define F_CPU 16000000
+#else
+	#define F_CPU 4915200
+#endif
 #include <util/delay.h>
 
-#define RESET						0b11000000
-#define READ						0b00000011
+#define RESET			0b11000000
+#define READ			0b00000011
 #define READ_RX_BUFFER	0b10010000
-#define WRITE						0b00000010
+#define WRITE			0b00000010
 #define LOAD_TX_BUFFER	0b01000000
-#define RTS							0b10000000
-#define READ_STATUS			0b10100000
-#define RX_STATUS				0b10110000
-#define BIT_MODIFY			0b00000101
+#define RTS				0b10000000
+#define READ_STATUS		0b10100000
+#define RX_STATUS		0b10110000
+#define BIT_MODIFY		0b00000101
 
 #ifdef ATMEGA2560
 	#define SPI_SS DDB7

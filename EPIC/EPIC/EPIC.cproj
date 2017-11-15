@@ -126,10 +126,16 @@
     <Compile Include="can_driver.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="game_1.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="data_fit.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="data_fit.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="game_1.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="MCP2515.h">
@@ -148,9 +154,6 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="spi_driver.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="dummy.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="graphic.c">
@@ -189,10 +192,16 @@
     <Compile Include="sram.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="strings.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="uart_driver.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="uart_driver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="util.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

@@ -1,9 +1,10 @@
 #include "oled_driver.h"
 #include "fonts.h"
 #include "uart_driver.h"
+#include "util.h"
 #include <stdbool.h>
 
-volatile uint8_t* oled_buffer=0x1800;
+volatile uint8_t* oled_buffer = (uint8_t *) 0x1800;
 
 void oled_init()
 {
@@ -32,15 +33,16 @@ void oled_init()
 
 	//set display offset
 	oled_write_command(0xd3);
-	oled_write_command(1);
+	oled_write_command(0x00);
 	//set display start line
 	oled_write_command(0x40);
 	//set page start address
 	oled_write_command(0xb0);
-	//set the lower start column address
-	oled_write_command(0);
-	//set the upper start column address
-	oled_write_command(127);
+	//set the lower nibble of start column address
+	oled_write_command(0x00);
+	//set the upper nibble of start column address
+	oled_write_command(0x10);
+
 
 	clear_buffer();
 	print_buffer();
@@ -59,20 +61,20 @@ void oled_clear(void)
 
 void print_buffer(void)
 {
-	oled_set_page(0);
+	oled_set_page(0x0);
 	for(uint8_t i = 0; i < M; i++)
 	{
 		for(uint8_t j = 0; j < N; j++)
 		{
-			oled_print(oled_buffer[i * 128 + j]);
+			oled_print(oled_buffer[i * N + j]);
 		}
-		i < M ? oled_set_page(i + 1) : oled_set_page(0);
+		i < M ? oled_set_page(i + 1) : oled_set_page(0x00);
 	}
 }
 
 void oled_print(uint8_t data)
 {
-	volatile uint8_t* oled = 0x1200;
+	volatile uint8_t* oled = (uint8_t *) 0x1201;
 	*oled = data;
 }
 
@@ -81,7 +83,7 @@ void clear_buffer(void)
 	for(int i = 0; i < M; i++)
 		for(int j = 0; j < N; j++)
 		{
-			oled_buffer[i * 128 + j] = 0x00;
+			oled_buffer[i * N + j] = 0x00;
 		}
 }
 
@@ -90,7 +92,7 @@ void ones_buffer(void)
 	for(int i = 0; i < M; i++)
 		for(int j = 0; j < N; j++)
 		{
-			oled_buffer[i * 128 + j] = 0xFF;
+			oled_buffer[i * N + j] = 0xFF;
 		}
 }
 
@@ -100,15 +102,15 @@ void oled_set_page(uint8_t page)
 	oled_write_command(0xb0 | page);
 
 	//set the lower start column address
-	oled_write_command(0);
+	oled_write_command(0x00);
 
 	//set the upper start column address
-	oled_write_command(127);
+	oled_write_command(0x10);
 }
 
 void oled_write_command(uint8_t command)
 {
-	volatile uint8_t* _command = 0x1000;
+	volatile uint8_t* _command = (uint8_t *) 0x1001;
 	*_command = command;
 }
 
@@ -166,25 +168,24 @@ void printGreetings(void)
 
 void print_thumb(void)
 {
-	position pos = { .page = 0, .column =0 };
-	print_string_to_buffer("    /(|         ", pos);
-	pos.page++;
-	print_string_to_buffer("   (  :         ", pos);
-	pos.page++;
-	print_string_to_buffer("  __\\  \\  _____", pos);
-	pos.page++;
-	print_string_to_buffer(" (____)  `|     ", pos);
-	pos.page++;
-	print_string_to_buffer("(____)|   |     ", pos);
-	pos.page++;
-	print_string_to_buffer(" (____).__|     ", pos);
-	pos.page++;
-	print_string_to_buffer("  (___)__.|_____", pos);
+	clear_buffer();
+	char string[MAX_STRING_LENGTH];
+	position pos = { .page = 0, .column = 0 };
+	for(int i = 0; i < 7; i++)
+	{
+		for (uint8_t i = 0; i < MAX_STRING_LENGTH; i++)
+			string[i] = 0;
+		getStringFromMem(string, 17 + i);
+		print_string_to_buffer(string, pos);
+		pos.page++;
+	}
 	print_buffer();
 }
 
 void printMenu(MenuNode* menu_entries)
 {
+	char string[MAX_STRING_LENGTH];
+	
 	clear_buffer();
 	if(menu_entries)
 	{
@@ -193,8 +194,11 @@ void printMenu(MenuNode* menu_entries)
 			if(menu_entries->m_submenus)
 			{
 				//TODO check if num submenus < 8
-				position pos = { .page = i, .column = 2 };
-				print_string_to_buffer(menu_entries->m_submenus[i]->m_content.title, pos);
+				position pos = { .page = i, .column = 2 }; //printf(menu_entries->m_submenus[i]->m_content.title); printf("\n");
+				for (uint8_t i = 0; i < MAX_STRING_LENGTH; i++)
+					string[i] = 0;
+				getStringFromMem(string, menu_entries->m_submenus[i]->m_content.title_id);
+				print_string_to_buffer(string, pos);
 			}
 			else
 				printf("NULL submenu\n");
@@ -209,20 +213,17 @@ void printMenu(MenuNode* menu_entries)
 
 void sayHello(void)
 {
-	position pos = { .page = 0, .column =0 };
-	print_string_to_buffer(" .------------. ", pos);
-	pos.page++;
-	print_string_to_buffer(" | Ping Pong! | ", pos);
-	pos.page++;
-	print_string_to_buffer(" `------------' ", pos);
-	pos.page++;
-	print_string_to_buffer("       ^        ", pos);
-	pos.page++;
-	print_string_to_buffer("       |  (\\_/) ", pos);
-	pos.page++;
-	print_string_to_buffer("       |__(O.o) ", pos);
-	pos.page++;
-	print_string_to_buffer("          (> <) ", pos);
+	clear_buffer();
+	char string[MAX_STRING_LENGTH];
+	position pos = { .page = 0, .column = 0 };
+	for(int i = 0; i < 7; i++)
+	{
+		for (uint8_t i = 0; i < MAX_STRING_LENGTH; i++)
+			string[i] = 0;
+		getStringFromMem(string, 24 + i);
+		print_string_to_buffer(string, pos);
+		pos.page++;
+	}
 	print_buffer();
 }
 

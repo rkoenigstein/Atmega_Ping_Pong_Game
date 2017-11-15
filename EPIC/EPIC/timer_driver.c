@@ -17,5 +17,5 @@ void timer_init(void)
 	TCCR3B &= ~(1 << CS31);
 	TCCR3B &= ~(1 << CS30);
 
-	DDRE |= (1<<PE3);
+	DDRE |= (1 << PE3);
 }

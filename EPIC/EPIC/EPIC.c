@@ -11,6 +11,7 @@
 #include "menu.h"
 #include "joystick_driver.h"
 #include "spi_driver.h"
+#include "game_1.h"
 
 #define F_CPU 4915200 // Clock speed
 #include <util/delay.h>
@@ -24,7 +25,7 @@ uint8_t current_selection = 0;
 
 bool highscore_activated = true;
 
-uint16_t highscore[7] = { 0, 0, 0, 0, 0, 0, 0 };
+uint8_t highscore[7] = { 0, 0, 0, 0, 0, 0, 0 };
 
 void main_init(void)
 {
@@ -35,15 +36,15 @@ void main_init(void)
 	can_init();
 	sei();
 	oled_init();
-	//menu_main = getMenuRoot();
+	menu_main = getMenuRoot();
 	printf("INIT DONE\n");
 	_delay_ms(1000);
-	}
+}
 
 /* interrupt service routine catching undefined interrupts */
 ISR(BADISR_vect)
 {
-	printf("Got undefined interrupts\n");
+	//printf("Got undefined interrupts\n");
 }
 
 void sendJoyPos(void)
@@ -54,16 +55,24 @@ void sendJoyPos(void)
 
 void sendButton(void)
 {
-	uint8_t data_b = R;
+	static uint16_t counter = 1;
+	uint8_t data_b[8] = { R, 0, 0, 0, 0, 0, 0, 0 };
 
-	//printf("LEFT=%d, RIGHT=%d\n",JOY_button(L), JOY_button(R));
 	if(!JOY_button(R) && !JOY_button(L))
 		return;
+
+	counter --;
+
 	if(JOY_button(L))
-		data_b = L;
-	can_message button_msg = { .id = BUTTONS, .length = 1, .data = data_b};
-	can_message_send(button_msg);
-	printf("CAN Button sent\n");
+		data_b[0] = L;
+
+	if(counter == 0)
+	{
+		can_message button_msg = { .id = BUTTONS, .length = 1, .data[0] = data_b[0] };
+		can_message_send(button_msg);
+		counter = 10;
+		printf("CAN Button sent\n");
+	}
 }
 
 void sendSliderPos(void)
@@ -75,34 +84,51 @@ void sendSliderPos(void)
 int main(void)
 {
 	main_init();
-
+	
 	//say hello to the guy in front of the display
-	sayHello();
-
-	while(1)
+	//sayHello();
+	//_delay_ms(2000);
+	
+	//TEST_graphic();
+	//_delay_ms(2000);
+	//oled_test();
+	
+	/*while(1)
 	{
+		
+		//printf("HELLO\n");
+		//printf("Hi\n");
+		//print_buffer_to_serial();
+		_delay_ms(100);
 		joy_pos = JOY_getPosition();
 		slid_pos = SLID_getPosition();
+		
+		//printf("CAN JOY x=%d, y=%d, oldx=%d, oldy=%d\n", joy_pos.x, joy_pos.y, old_joy_pos.x, old_joy_pos.y);
 		if(joy_pos.x > old_joy_pos.x + 10 || joy_pos.y > old_joy_pos.y + 10 || joy_pos.x < old_joy_pos.x - 10 || joy_pos.y < old_joy_pos.y - 10)
 		{
 			sendJoyPos();
-			//printf("Sending ")
+			printf("CAN Joy sent\n");
 		}
 		_delay_ms(10);
-			sendButton();
+		sendButton();
 		_delay_ms(10);
 		if(slid_pos.r > old_slid_pos.r + 10 || slid_pos.l > old_slid_pos.l + 10 || slid_pos.r < old_slid_pos.r - 10 || slid_pos.l < old_slid_pos.l - 10)
+		{
+			//printf("old l: %d, old r: %d, new l: %d, new r: %d\n", old_slid_pos.l, old_slid_pos.r, slid_pos.l,slid_pos.r);
 			sendSliderPos();
+			//printf("slid r: %d slid l: %d \n", slid_pos.l, slid_pos.r);
+			printf("Can SLid sent\n");
+		}
 		_delay_ms(10);
 		old_joy_pos = joy_pos;
 		old_slid_pos = slid_pos;
-	}
+	}*/
 
-	/*while(0)
+	while(1)
 	{
 
 		joy_pos = JOY_getPosition();
-		sendJoyPos();
+		//sendJoyPos();
 		_delay_ms(10);
 
 		switch(joy_pos.dir)
@@ -144,13 +170,12 @@ int main(void)
 			}
 			default:
 				break;
-
 		}
 
 		printMenu(menu_main);
 		print_selection(current_selection);
 		_delay_ms(300);
-	}*/
+	}
 
 	//testCANconnection();
 	//TEST_animation();
@@ -161,27 +186,27 @@ int main(void)
 	//TEST_GAL();
 	//TEST_ADC();
 	//TEST_SRAM_test();
-  //TEST_write_adress();
+	//TEST_write_adress();
   return 0;
 }
 
 /* test of CAN bus between node1 and node2 */
 void testCANconnection(void)
 {
-	while(1)
+	/*while(1)
 	{
 		can_message node_2;
 		printf("Waiting for mz message\n");
 		node_2 = can_data_receive();
 		printf("Got it\n");
 		printf("CAN id: %d, CAN data length: %d, CAN data: %c, %c, %c, %c \n",node_2.id, node_2.length, node_2.data[0], node_2.data[1], node_2.data[2], node_2.data[3]);
-	}
+	}*/
 }
 
-void send_song_CAN(uint8_t song)
+/*void send_song_CAN(uint8_t song)
 {
-	can_message song = { .id = PLAY_SONG, .length = 1, .data = {song} };
-	can_message_send(song);
+	can_message song_msg = { .id = PLAY_SONG, .length = 1, .data = {song} };
+	can_message_send(song_msg);
 }
 
 void song_harry_potter(void)
@@ -202,11 +227,11 @@ void song_pokemon(void)
 void song_tetris(void)
 {
 	send_song_CAN(TETRIS);
-}
+}*/
 
 void showHighscore(void)
 {
-	position pos = { .page = 0, .column = 1 };
+	/*position pos = { .page = 0, .column = 1 };
 	print_string_to_buffer("HIGHSCORE", pos);
 	pos.page++;
 	char place[1];
@@ -217,24 +242,24 @@ void showHighscore(void)
 	{
 		char entry[16];
 		strcpy(entry, "No. ");
-		strcpy(entry, itoa(i, place[i]));
+		strcpy(entry, itoa(i, place[i], 10));
 		strcpy(entry, ": ");
-		strcpy(entry, itoa(highscore[i], high[i]));
+		strcpy(entry, itoa(highscore[i], high[i], 10));
 		print_string_to_buffer(entry, pos);
 		pos.page++;
 	}
-	print_buffer();
+	print_buffer();*/
 }
 
 void resetHighscore(void)
 {
-	for(int i = 0; i < 8; i++)
-		highscore[i] = 0;
+	/*for(int i = 0; i < 8; i++)
+		highscore[i] = 0;*/
 }
 
 void storeHighscore(void)
 {
-	position pos = { .page = 0, .column = 1 };
+	/*position pos = { .page = 0, .column = 1 };
 	print_string_to_buffer("Highscore is", pos);
 	pos.page++;
 	if(highscore_activated)
@@ -255,5 +280,5 @@ void storeHighscore(void)
 	pos.page++;
 	print_string_to_buffer("button.", pos);
 	while(!JOY_button(0));
-	highscore_activated = !highscore_activated;
+	highscore_activated = !highscore_activated;*/
 }

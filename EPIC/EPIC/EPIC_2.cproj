@@ -147,6 +147,15 @@
     <Compile Include="motor_control.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="music.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="music.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="music_notes.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="Parameters.h">
       <SubType>compile</SubType>
     </Compile>

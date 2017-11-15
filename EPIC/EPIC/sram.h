@@ -3,7 +3,11 @@
 
 #include <avr/io.h>
 
-#define F_CPU 4915200 // Clock speed
+#ifdef ATMEGA2560
+	#define F_CPU 16000000
+#else
+	#define F_CPU 4915200
+#endif
 #include <util/delay.h>
 
 //define latch enable pin

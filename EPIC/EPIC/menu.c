@@ -1,7 +1,14 @@
 #include "menu.h"
+#include "Parameters.h"
 
-#define F_CPU 4915200 // Clock speed
+#ifdef ATMEGA2560
+	#define F_CPU 16000000
+#else
+	#define F_CPU 4915200
+#endif
 #include <util/delay.h>
+
+#include <string.h>
 
 //include external functions passed to the menu
 extern void song_harry_potter(void);
@@ -9,28 +16,22 @@ extern void song_tetris(void);
 extern void song_cantina_band(void);
 extern void song_pokemon(void);
 
-extern void printGreetings(void);
-extern void print1(void);
-extern void print2(void);
-extern void print3(void);
-extern void print4(void);
-extern void printMain(void);
-
 extern void storeHighscore(void);
 extern void resetHighscore(void);
 extern void calibrateLeftSlider(void);
 extern void calibrateRightSlider(void);
 extern void calibrateJoystick(void);
 extern void showHighscore(void);
+extern void ping_pong_idle(void);
 
 static MenuNode* _menu;
 
-MenuNode* createMenuNode(char* title, void (*operation)(void), uint8_t num_of_submenus)
+MenuNode* createMenuNode(uint8_t title_id, void (*operation)(void), uint8_t num_of_submenus)
 {
 	MenuNode* _mnode = malloc(sizeof(MenuNode));
 	_mnode->m_submenus = malloc(num_of_submenus*sizeof(MenuNode*));
 	_mnode->m_num_submenus = num_of_submenus;
-	_mnode->m_content.title = title;
+	_mnode->m_content.title_id = title_id;
 	_mnode->m_content.operation = operation;
 	return _mnode;
 }
@@ -61,23 +62,29 @@ MenuNode* getMenuRoot(void)
 
 void createMenu(void)
 {
-	_menu = createMenuNode("root", NULL, 4);
-	_menu->m_submenus[0] = createMenuNode("Games", NULL, 2);
-	_menu->m_submenus[0]->m_submenus[0] = createMenuNode("PingPong", &print2, 0);
-	_menu->m_submenus[0]->m_submenus[1] = createMenuNode("PingPang", &print1, 0);
-	_menu->m_submenus[1] = createMenuNode("Highscore", &showHighscore, 0);
-	_menu->m_submenus[2] = createMenuNode("Settings", NULL, 3);
-	_menu->m_submenus[2]->m_submenus[0] = createMenuNode("Store Highscore", &storeHighscore, 0);
-	_menu->m_submenus[2]->m_submenus[1] = createMenuNode("Reset Highscore", &resetHighscore, 0);
-	_menu->m_submenus[2]->m_submenus[2] = createMenuNode("Calibrate Joystick", &calibrateJoystick, 0);
-	_menu->m_submenus[2]->m_submenus[3] = createMenuNode("Calibrate Sliders", NULL, 2);
-	_menu->m_submenus[2]->m_submenus[2]->m_submenus[0] = createMenuNode("Left Slider", &calibrateLeftSlider, 0);
-	_menu->m_submenus[2]->m_submenus[2]->m_submenus[1] = createMenuNode("Right Slider", &calibrateRightSlider, 0);
-	_menu->m_submenus[3] = createMenuNode("Songs", NULL, 4);
+	_menu = createMenuNode(0, NULL, 4);
+	_menu->m_submenus[0] = createMenuNode(1, NULL, 2);
+	_menu->m_submenus[0]->m_submenus[0] = createMenuNode(2, NULL, 0);
+	_menu->m_submenus[0]->m_submenus[1] = createMenuNode(3, &ping_pong_idle, 0);
+	_menu->m_submenus[1] = createMenuNode(4, &showHighscore, 0);
+	_menu->m_submenus[2] = createMenuNode(5, NULL, 4);
+	_menu->m_submenus[2]->m_submenus[0] = createMenuNode(6, &storeHighscore, 0);
+	_menu->m_submenus[2]->m_submenus[1] = createMenuNode(7, &resetHighscore, 0);
+	_menu->m_submenus[2]->m_submenus[2] = createMenuNode(8, &calibrateJoystick, 0);
+	_menu->m_submenus[2]->m_submenus[3] = createMenuNode(9, NULL, 2);
+	_menu->m_submenus[2]->m_submenus[3]->m_submenus[0] = createMenuNode(10, &calibrateLeftSlider, 0);
+	_menu->m_submenus[2]->m_submenus[3]->m_submenus[1] = createMenuNode(11, &calibrateRightSlider, 0);
+	_menu->m_submenus[3] = createMenuNode(12, NULL, 4);
+	/*
 	_menu->m_submenus[3]->m_submenus[0] = createMenuNode("Harry Potter", &play_song, 0);
 	_menu->m_submenus[3]->m_submenus[1] = createMenuNode("Tetris", &play_song, 0);
 	_menu->m_submenus[3]->m_submenus[2] = createMenuNode("Cantina Band", &play_song, 0);
 	_menu->m_submenus[3]->m_submenus[3] = createMenuNode("Pokemon", &play_song, 0);
+	*/
+	_menu->m_submenus[3]->m_submenus[0] = createMenuNode(13, NULL, 0);
+	_menu->m_submenus[3]->m_submenus[1] = createMenuNode(14, NULL, 0);
+	_menu->m_submenus[3]->m_submenus[2] = createMenuNode(15, NULL, 0);
+	_menu->m_submenus[3]->m_submenus[3] = createMenuNode(16, NULL, 0);
 	assignParents(_menu);
 	printf("PARENTS ASSIGNED\n");
 

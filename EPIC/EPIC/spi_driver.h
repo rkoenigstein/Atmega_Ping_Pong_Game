@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 #include <avr/io.h>
-#include "Parameters.h"
 
 //Define MCP output buffers (for CAN)
 #define NO_BUFFER  0

@@ -2,14 +2,21 @@
 #include <inttypes.h>
 #include "motor_control.h"
 #include "TWI_Master.h"
+#include "Parameters.h"
 
-#define F_CPU 16000000
+#ifdef ATMEGA2560
+	#define F_CPU 16000000 //Clock speed
+#else
+	#define F_CPU 4915200 // Clock speed
+#endif
 #include <util/delay.h>
 
-int16_t current_joy_pos;
-int16_t old_joy_pos;
+int8_t current_joy_pos;
+int8_t old_joy_pos;
 
-int global_current_direction = NEUTRAL;
+uint8_t global_current_direction = NEUTRAL;
+uint8_t old_direction = NEUTRAL;
+
 bool global_current_position = false;
 uint8_t global_motor_speed;
 
@@ -73,7 +80,7 @@ void setMotorSpeed(void)
 }
 void setMotorPosition(JOY_POS current_position)
 {
-	current_joy_pos = (current_position.y - 127);// << 8;
+	current_joy_pos = current_position.x - 128;
 	global_current_direction = current_position.dir;
 }
 
@@ -154,50 +161,49 @@ void resetEncoder(void)
 void shoot_init(void)
 {
 	DDRL |= (1 << PL6);
+	PORTL |= (1 << PL6);
 }
 
 void PIMotorController(void)
 {
-	global_motor_speed=0x60;
-	setMotorDir(current_joy_pos > 0);
-	
-	/*static int esum = 0;
-	int encoder = getEncoderValue();
-	int16_t e = encoder - current_joy_pos;
-	if(global_current_direction == NEUTRAL)
-	{
-		return;
-	}
-	
-	if(old_joy_pos != current_joy_pos)
-		esum += e;
-	//printf("e: %d \n", e);
-	int16_t new_val = (Kp * e + Ki * T * esum);
-	//printf("new val: %d \n", (uint8_t) abs(new_val));
-	global_motor_speed = (uint8_t) abs(new_val);
-	setMotorDir(new_val > 0);*/
-
-	//printf("analog: %d \n", global_motor_speed);
-	if(global_current_direction != NEUTRAL)
-	{
-		unsigned char msg[3] = {0x50, 0x0, global_motor_speed};
-		TWI_Start_Transceiver_With_Data(msg, 3);
-		old_joy_pos = current_joy_pos;
-	}
-	else
+	static int count = 0;
+	if(global_current_direction == NEUTRAL || global_current_direction == UP || global_current_direction == DOWN)
 	{
 		unsigned char msg[3] = {0x50, 0x0, 0};
 		TWI_Start_Transceiver_With_Data(msg, 3);
-		old_joy_pos = current_joy_pos;
+		return;
 	}
 	
+	static uint8_t esum = 0;
+	int8_t e = 0;
+	int8_t encoder = (getEncoderValue() >> 8);
+	e = current_joy_pos - encoder;
+	
+	setMotorDir(global_current_direction == LEFT);
+	if(!(encoder == 0) && (old_joy_pos != current_joy_pos))
+		esum += e;
+	
+	int8_t new_val = (Kp * e + Ki * T * esum);
+	//if(count++ % 7 == 0)
+		//printf("new_val: %d\n",abs(new_val));
+
+	global_motor_speed = abs(new_val);
+	
+	//printf("encoder: %d, e: %d, esum: %d, speed:%d \n", encoder, e, esum, global_motor_speed);
+
+	//printf("analog: %d \n", global_motor_speed);
+	unsigned char msg[3] = {0x50, 0x0, global_motor_speed};
+	TWI_Start_Transceiver_With_Data(msg, 3);
+	
+	old_joy_pos = current_joy_pos;
+	old_direction = global_current_direction;
 }
 
 void shoot(void)
 {
-	PORTL |= (1 << PL6);
-	_delay_ms(50);
 	PORTL &= ~(1 << PL6);
+	_delay_ms(50);
+	PORTL |= (1 << PL6);
 }
 
 /* interrupt service routine for timer overflow to update motor control */

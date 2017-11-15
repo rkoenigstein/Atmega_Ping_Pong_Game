@@ -4,10 +4,10 @@
 
 void uart_init(void)
 {
-	int ubrr = MYUBRR;
+	uint8_t ubrr = MYUBRR;
 	//set baudrate to 9600
-	UBRR0H = (unsigned char) (ubrr >> 8);
-	UBRR0L = (unsigned char) ubrr;
+	UBRR0H = (uint8_t) (ubrr >> 8);
+	UBRR0L = (uint8_t) ubrr;
 
 	//enable receiver and transmitter
 	UCSR0B |= (1 << RXEN0) | (1 << TXEN0);
@@ -37,16 +37,17 @@ void uart_init(void)
 	fdevopen(uart_putc, uart_getc);
 }
 
-void uart_putc(unsigned char c)
+int uart_putc(uint8_t c)
 {
 	//wait while register is free
 	while (!(UCSR0A & (1 << UDRE0)));
 
 	//put character to USART data register
 	UDR0 = c;
+	return 0;
 }
 
-unsigned char uart_getc(void)
+int uart_getc(void)
 {
 	//wait while register is free
 	while(!(UCSR0A & (1 << RXC0)));
@@ -55,7 +56,7 @@ unsigned char uart_getc(void)
 	return UDR0;
 }
 
-void uart_putstring(unsigned char* name)
+void uart_putstring(char* name)
 {
 	int i;
 	for(i = 0; i < MAX_STRING; i++)
@@ -71,8 +72,8 @@ void TEST_reciver_transmitter_string(void)
 {
 	 uart_init();
 
-	 unsigned char c;
-	 unsigned const char* hello_string = "Hello World";
+	 char c;
+	 char* hello_string = "Hello World";
 
 	 uart_putstring(hello_string);
 

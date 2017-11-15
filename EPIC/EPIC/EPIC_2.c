@@ -2,12 +2,14 @@
 #include "uart_driver.h"
 #include "MCP2515.h"
 
-#define F_CPU 16000000
+#ifdef ATMEGA2560
+	#define F_CPU 16000000 //Clock speed
+#else
+	#define F_CPU 4915200 // Clock speed
+#endif
 #include <util/delay.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
-
-//#include <avr/delay.h>
 
 #include "can_driver.h"
 #include "timer_driver.h"
@@ -15,7 +17,7 @@
 #include "motor_control.h"
 #include "servo_driver.h"
 #include "TWI_Master.h"
-#include "music.h"
+//#include "music.h"
 #include <stdbool.h>
 #include <avr/sleep.h>
 
@@ -25,6 +27,13 @@ SLID current_slider;
 int cur_top = BOTTOM + (TOP-BOTTOM)/2;
 
 int score = 0;
+
+void sleep_init (void)
+{
+	//select Power-down mode
+	SMCR |= (1 << SM1);
+	SMCR &= ~(1 << SM0) & ~(1 << SM2);
+}
 
 void main_init (void)
 {
@@ -37,16 +46,9 @@ void main_init (void)
 	TWI_Master_Initialise();
 	sei();
 	motor_init();
-	sleep_init();
-	music_init();
+	//sleep_init();
+	//music_init();
 	printf("INIT DONE\n");
-}
-
-void sleep_init (void)
-{
-	//select Power-down mode
-	SMCR |= (1 << SM1);
-	SMCR &= ~(1 << SM0) & ~(1 << SM2);
 }
 
 void go_to_sleep (void)
@@ -62,17 +64,16 @@ void go_to_sleep (void)
 
 	//disable SE
 	SMCR &= ~(1 << SE);
-
 }
-void update_OCR(uint8_t joy_x_pos)
+
+void update_OCR(uint8_t servo_pos)
 {
 	//DDRE |= (1 << PE3);
-	OCR3A = (uint8_t) calculateDutyCycle(joy_x_pos);
+	OCR3A = (uint8_t) calculateDutyCycle(servo_pos);
 }
 
 void updateScore(void)
 {
-
 	int val=0;
 	bool flag = false;
 	for(uint8_t i=0; i<10;i++)
@@ -92,17 +93,21 @@ int main(void)
  {
 
 	main_init();
-	_delay_ms(1000);
-	int enc = getEncoderValue();
-	printf("enc: %d\n", enc);
 
+	/*while(1)
+	{
+		play_song(1);
+	}*/
+	
+	
 	while(1)
 	{
 		//printf("hey\n");
 		//printf("IR value: %d\n", getIRValue());
 		//updateScore();
 		//printf("The score is %d\n", score);
-		_delay_ms(100);
+		//printRegisters();
+		_delay_ms(10);
 
 		can_msg = can_data_receive();
 
@@ -110,7 +115,7 @@ int main(void)
 		{
 			case JOY:
 			{
-				//printf("Got Joy pos \n");
+				printf("Got Joy pos \n");
 				if(can_msg.length != 3)
 				{
 					printf("ERROR IN CAN MSG, WRONG LENGTH FOR JOY POS\n");
@@ -119,7 +124,6 @@ int main(void)
 				current_joy_pos.x = can_msg.data[R];
 				current_joy_pos.y = can_msg.data[L];
 				current_joy_pos.dir = can_msg.data[DIR];
-				update_OCR(current_joy_pos.x);
 				printf("JOY x: %d, JOY y: %d, JOY dir: %d\n", current_joy_pos.x, current_joy_pos.y, current_joy_pos.dir);
 				setMotorPosition(current_joy_pos);
 				break;
@@ -152,7 +156,8 @@ int main(void)
 				}
 				current_slider.r = can_msg.data[R];
 				current_slider.l = can_msg.data[L];
-				printf("right slider: %d, left slider: %d\n", current_slider.r, current_slider.l);
+				//printf("right slider: %d, left slider: %d\n", current_slider.r, current_slider.l);
+				update_OCR(current_slider.r);
 				break;
 			}
 			case CAN_SLEEP:
@@ -165,7 +170,7 @@ int main(void)
 			case PLAY_SONG:
 			{
 				printf("Playing music\n");
-				play_song(can_msg.data[0]);
+				//play_song(can_msg.data[0]);
 				break;
 			}
 			default:
@@ -177,7 +182,7 @@ int main(void)
 
     }
 
-	TEST_music();
+	//TEST_music();
 	//test_shoot();
 }
 

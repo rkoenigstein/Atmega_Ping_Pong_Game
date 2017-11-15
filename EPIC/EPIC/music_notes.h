@@ -2,6 +2,7 @@
 #define MUSIC_NOTES_H_
 
 #include <avr/pgmspace.h>
+//#include <stdint.h>
 
 #define pause 0.00
 
@@ -25,13 +26,36 @@
 #define sixteenth 0.0625
 
 #define NUM_OF_SONGS 4
+/*
+const float PROGMEM pause = 0.00;
 
-#define point_note(x) ((x)*1.5)
-#define connected_note(x,y) ((x) + (y))
+const uint8_t PROGMEM C = 0;
+const uint8_t PROGMEM Cs = 1;
+const uint8_t PROGMEM D = 2;
+const uint8_t PROGMEM Ds = 3;
+const uint8_t PROGMEM E = 4;
+const uint8_t PROGMEM F = 5;
+const uint8_t PROGMEM Fs = 6;
+const uint8_t PROGMEM G = 7;
+const uint8_t PROGMEM Gs = 8;
+const uint8_t PROGMEM A = 9;
+const uint8_t PROGMEM As = 10;
+const uint8_t PROGMEM B = 11;
+
+const float PROGMEM whole = 1.0;
+const float PROGMEM half = 0.5;
+const float PROGMEM quarter = 0.25;
+const float PROGMEM octal = 0.125;
+const float PROGMEM sixteenth = 0.0625;
+
+const uint8_t PROGMEM NUM_OF_SONGS = 4;
+*/
+#define point_note(x) ((x) * 1.5)
+#define connected_note(x, y) ((x) + (y))
 
 //music frequencies of notes according to http://www.phy.mtu.edu/~suits/notefreqs.html
 //octaves 0 to 8, C, Cs, D, Ds, E, F, Fs, G, Gs, A, As, B
-const unsigned float PROGMEM notes[9][12] =
+const float PROGMEM notes[9][12] =
 {
   {16.35, 17.32, 18.35, 19.45, 20.60, 21.83, 23.12, 24.50, 25.96, 27.50, 29.14, 30.87}, //0
   {32.70, 34.65, 36.71, 38.89, 41.20, 43.65, 46.25, 49.00, 51.91, 55.00, 58.27, 61.74}, //1
@@ -42,17 +66,17 @@ const unsigned float PROGMEM notes[9][12] =
   {1046.50, 1108.73, 1174.66, 1244.51, 1318.51, 1396.91, 1479.98, 1567.98, 1661.22, 1760.00, 1864.66, 1975.53}, //6
   {2093.00, 2217.46, 2349.32, 2489.02, 2637.02, 2793.83, 2959.96, 3135.96, 3322.44, 3520.00, 3729.31, 3951.07}, //7
   {4186.01, 4434.92, 4698.63, 4978.03, 5274.04, 5587.65, 5919.91, 6271.93, 6644.88, 7040.00, 7458.62, 7902.13}, //8
-}
+};
 
 //songs available to be played
-const unsigned float PROGMEM songs_durations[NUM_OF_SONGS][61] =
+const float PROGMEM songs_durations[NUM_OF_SONGS][61] =
 {
   {
     quarter, point_note(quarter), octal, quarter, half, quarter, point_note(half), point_note(half),
-    point_note(quarter), octal, quarter, half, quarter, connected_note(point_note(half),(half)),
+    point_note(quarter), octal, quarter, half, quarter, connected_note(point_note(half), half),
     quarter, point_note(quarter), octal, quarter, half, quarter, half, quarter, half, quarter, point_note(quarter),
-    octal, quarter, half, qurater, connected_note(point_note(half), half), quarter, half, quarter, half, quarter, half quarter, half,
-    quarter, point_note(quarter), octal quarter, half, quarter, connected_note(point_note(half), half), quarter,
+    octal, quarter, half, quarter, connected_note(point_note(half), half), quarter, half, quarter, half, quarter, half, quarter, half,
+    quarter, point_note(quarter), octal, quarter, half, quarter, connected_note(point_note(half), half), quarter,
     half, quarter, half, quarter, half, quarter, half, quarter, point_note(quarter), octal, quarter, half, quarter, connected_note(point_note(half), half), quarter
   }, //harry potter - hedwig
   {
@@ -70,41 +94,48 @@ const unsigned float PROGMEM songs_durations[NUM_OF_SONGS][61] =
     octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, half, half,
     octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, half, half,
     octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, half, quarter, quarter
-  } //Pokemon Theme
-}
+  } //Pokemon Theme*/
+};
 
 //songs available to be played
-const unsigned float PROGMEM songs_frequencies[NUM_OF_SONGS][61] =
+const float songs_frequencies[1][61] =
 {
-  {
-    notes[2][B], notes[3][E], notes[3][G], notes[3][Fs], notes[3][E], notes[3][B], notes[3][A], notes[3][Fs], notes[3][E], notes[3][G], notes[3][Fs], notes[3][Ds],
-    notes[3][F], notes[2][B], notes[2][B], notes[3][E], notes[3][G], notes[3][Fs], notes[3][E], notes[3][B], notes[4][D], notes[4][Cs], notes[4][C], notes[3][Gs],
-    notes[4][C], notes[3][B], notes[3][As], notes[2][As], notes[3][G], notes[3][E], notes[3][G], notes[3][B], notes[3][G], notes[3][B], notes[3][G], notes[4][D],
-    notes[4][Cs], notes[4][C], notes[3][Gs], notes[3][G], notes[3][B], notes[3][As], notes[2][As], notes[2][B], notes[3][B], notes[3][G], notes[3][B], notes[3][G],
-    notes[3][B], notes[3][G], notes[4][C], notes[3][B], notes[3][As], notes[3][Fs], notes[4][C], notes[3][B], notes[3][As], notes[2][As], notes[3][G], notes[3][E], pause
-  }, //harry potter - hedwig
-  {
-    notes[3][E], notes[2][B], notes[3][C], notes[3][D], notes[3][C], notes[2][B], notes[2][A], notes[2][A], notes[3][C], notes[3][E], notes[3][D], notes[3][C],
-    notes[2][B], notes[3][C], notes[3][D], notes[3][E], notes[3][C], notes[2][A], notes[2][A], notes[2][A], notes[2][B], notes[3][C], notes[3][D], notes[3][F],
-    notes[3][A], notes[3][G], notes[3][F], notes[3][E], notes[3][C], notes[3][E], notes[3][D], notes[3][C], notes[2][B], notes[2][B], notes[3][C], notes[3][D],
-    notes[3][E], notes[3][C], notes[2][A], notes[2][A], pause, notes[3][E], notes[3][C], notes[3][D], notes[2][B], notes[3][C], notes[2][A], notes[2][Gs],
-    notes[2][B], pause, notes[3][E], notes[3][C], notes[3][D], notes[2][B], notes[3][C], notes[3][E], notes[3][A], notes[3][Gs], pause, pause, pause
-  }, //Tetris
-  {
-    notes[3][E], notes[3][A], notes[3][E], notes[3][A], notes[3][E], notes[3][A], notes[3][E], pause, notes[3][Ds], notes[3][E], notes[3][E],
-    notes[3][Ds], notes[3][E], notes[3][D], pause, notes[3][Cs], notes[3][D], notes[3][Cs], notes[3][C], notes[2][A], notes[3][E], notes[3][A],
-    notes[3][E], notes[3][A], notes[3][E], notes[3][A], notes[3][E], pause, notes[3][Ds], notes[3][E], notes[3][D], pause, notes[3][D],
-    notes[3][Cs], notes[3][D], notes[3][G], notes[3][F], notes[3][E], notes[3][D], notes[3][E], notes[3][A], notes[3][E], notes[3][A], notes[3][E],
-    notes[3][A], notes[3][E], pause, notes[3][Ds], notes[3][E], notes[3][G], pause, notes[3][G], notes[3][E], notes[3][D], notes[3][C], notes[2][A]
-  }, //Cantina band
-  {
-    notes[2][D], notes[2][D], notes[2][A], notes[2][D], notes[2][D], notes[2][As], notes[2][D], notes[2][D], notes[2][A], notes[2][D], notes[2][D], notes[2][Cs],
-    notes[2][D], notes[2][D], notes[2][A], notes[2][D], notes[2][D], notes[3][Cs], notes[3][D], pause, notes[2][D], notes[2][D], notes[2][A], notes[2][D],
-    notes[2][D], notes[2][As], notes[2][D], notes[2][D], notes[2][A], notes[2][D], notes[2][D], notes[2][Cs], notes[2][D], notes[2][D], notes[2][A], notes[2][D],
-    notes[2][D], notes[3][Cs], notes[3][D], pause, notes[2][D], notes[2][D], notes[2][A], notes[2][D], notes[2][D], notes[2][As], notes[2][D], notes[2][D],
-    notes[2][A], notes[2][D], notes[2][D], notes[2][Cs], notes[2][D], notes[2][D], notes[2][A], notes[2][D], notes[2][D], notes[3][Cs], notes[3][D], pause, pause
-  } //Pokemon Theme
-}
+	{
+		123.47, 164.81, 196.00, 185.00, 164.81, 246.94, 220.00, 185.00, 164.81, 196.00, 185.00, 155.56,
+		123.47, 164.81, 196.00, 185.00, 164.81, 246.94, 220.00, 185.00, 164.81, 196.00, 185.00, 155.56,
+		123.47, 164.81, 196.00, 185.00, 164.81, 246.94, 220.00, 185.00, 164.81, 196.00, 185.00, 155.56,
+		123.47, 164.81, 196.00, 185.00, 164.81, 246.94, 220.00, 185.00, 164.81, 196.00, 185.00, 155.56,
+		123.47, 164.81, 196.00, 185.00, 164.81, 246.94, 220.00, 185.00, 164.81, 196.00, 185.00, 155.56
+	}/*
+	{
+		notes[2][B], notes[3][E], notes[3][G], notes[3][Fs], notes[3][E], notes[3][B], notes[3][A], notes[3][Fs], notes[3][E], notes[3][G], notes[3][Fs], notes[3][Ds],
+		notes[3][F], notes[2][B], notes[2][B], notes[3][E], notes[3][G], notes[3][Fs], notes[3][E], notes[3][B], notes[4][D], notes[4][Cs], notes[4][C], notes[3][Gs],
+		notes[4][C], notes[3][B], notes[3][As], notes[2][As], notes[3][G], notes[3][E], notes[3][G], notes[3][B], notes[3][G], notes[3][B], notes[3][G], notes[4][D],
+		notes[4][Cs], notes[4][C], notes[3][Gs], notes[3][G], notes[3][B], notes[3][As], notes[2][As], notes[2][B], notes[3][B], notes[3][G], notes[3][B], notes[3][G],
+		notes[3][B], notes[3][G], notes[4][C], notes[3][B], notes[3][As], notes[3][Fs], notes[4][C], notes[3][B], notes[3][As], notes[2][As], notes[3][G], notes[3][E], pause
+	}, //harry potter - hedwig
+	{
+		notes[3][E], notes[2][B], notes[3][C], notes[3][D], notes[3][C], notes[2][B], notes[2][A], notes[2][A], notes[3][C], notes[3][E], notes[3][D], notes[3][C],
+		notes[2][B], notes[3][C], notes[3][D], notes[3][E], notes[3][C], notes[2][A], notes[2][A], notes[2][A], notes[2][B], notes[3][C], notes[3][D], notes[3][F],
+		notes[3][A], notes[3][G], notes[3][F], notes[3][E], notes[3][C], notes[3][E], notes[3][D], notes[3][C], notes[2][B], notes[2][B], notes[3][C], notes[3][D],
+		notes[3][E], notes[3][C], notes[2][A], notes[2][A], pause, notes[3][E], notes[3][C], notes[3][D], notes[2][B], notes[3][C], notes[2][A], notes[2][Gs],
+		notes[2][B], pause, notes[3][E], notes[3][C], notes[3][D], notes[2][B], notes[3][C], notes[3][E], notes[3][A], notes[3][Gs], pause, pause, pause
+	}, //Tetris
+	{
+		notes[3][E], notes[3][A], notes[3][E], notes[3][A], notes[3][E], notes[3][A], notes[3][E], pause, notes[3][Ds], notes[3][E], notes[3][E],
+		notes[3][Ds], notes[3][E], notes[3][D], pause, notes[3][Cs], notes[3][D], notes[3][Cs], notes[3][C], notes[2][A], notes[3][E], notes[3][A],
+		notes[3][E], notes[3][A], notes[3][E], notes[3][A], notes[3][E], pause, notes[3][Ds], notes[3][E], notes[3][D], pause, notes[3][D],
+		notes[3][Cs], notes[3][D], notes[3][G], notes[3][F], notes[3][E], notes[3][D], notes[3][E], notes[3][A], notes[3][E], notes[3][A], notes[3][E],
+		notes[3][A], notes[3][E], pause, notes[3][Ds], notes[3][E], notes[3][G], pause, notes[3][G], notes[3][E], notes[3][D], notes[3][C], notes[2][A]
+	}, //Cantina band
+	{
+		notes[2][D], notes[2][D], notes[2][A], notes[2][D], notes[2][D], notes[2][As], notes[2][D], notes[2][D], notes[2][A], notes[2][D], notes[2][D], notes[2][Cs],
+		notes[2][D], notes[2][D], notes[2][A], notes[2][D], notes[2][D], notes[3][Cs], notes[3][D], pause, notes[2][D], notes[2][D], notes[2][A], notes[2][D],
+		notes[2][D], notes[2][As], notes[2][D], notes[2][D], notes[2][A], notes[2][D], notes[2][D], notes[2][Cs], notes[2][D], notes[2][D], notes[2][A], notes[2][D],
+		notes[2][D], notes[3][Cs], notes[3][D], pause, notes[2][D], notes[2][D], notes[2][A], notes[2][D], notes[2][D], notes[2][As], notes[2][D], notes[2][D],
+		notes[2][A], notes[2][D], notes[2][D], notes[2][Cs], notes[2][D], notes[2][D], notes[2][A], notes[2][D], notes[2][D], notes[3][Cs], notes[3][D], pause, pause
+	} //Pokemon Theme*/
+};
 
 //speed of songs
 const uint8_t PROGMEM song_speed[NUM_OF_SONGS] = {180, 144, 180, 190};

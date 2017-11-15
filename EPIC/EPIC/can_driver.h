@@ -5,7 +5,6 @@
 #include <stdbool.h>
 #include <avr/interrupt.h>
 #include "mcp_driver.h"
-#include "Parameters.h"
 
 typedef struct can_message
 {

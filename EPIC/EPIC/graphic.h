@@ -1,15 +1,16 @@
 #ifndef GRAPHIC_H
 #define GRAPHIC_H
 
+#include <stdint.h>
 #include <stdbool.h>
 
-enum{RECT_EMPT, FULL, TRI_EMPT, CIRC_EMPT};
+enum{FULL, RECT_EMPT, DESTROYED, TRI_EMPT, CIRC_EMPT};
 
 //define a position
 struct pos
 {
-    int x;
-    int y;
+    uint8_t x;
+    uint8_t y;
 };
 typedef struct pos POS;
 
@@ -17,9 +18,9 @@ typedef struct pos POS;
 struct rect
 {
     POS pos;
-    int Lx;   //length in x
-    int Ly;   //length in y
-    int full; //full or just the border
+    uint8_t Lx;   //length in x
+    uint8_t Ly;   //length in y
+    uint8_t full; //full or just the border
 };
 typedef struct rect RECT;
 
@@ -27,8 +28,8 @@ typedef struct rect RECT;
 struct circ
 {
     POS pos;
-    int r;    //radius of the circle
-    int full; //full or just the border
+    uint8_t r;    //radius of the circle
+    uint8_t full; //full or just the border
 };
 typedef struct circ CIRC;
 
@@ -36,9 +37,9 @@ typedef struct circ CIRC;
 struct tri
 {
     POS pos;
-    int l;    //length of the triangle
-    int full; //full or just the border
-    int ori;  //orientation with enum
+    uint8_t l;    //length of the triangle
+    uint8_t full; //full or just the border
+    uint8_t ori;  //orientation with enum
 };
 typedef struct tri TRI;
 

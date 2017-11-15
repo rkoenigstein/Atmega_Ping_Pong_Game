@@ -5,6 +5,6 @@
 #include <avr/io.h>
 #include "timer_driver.h"
 
-uint8_t calculateDutyCycle(uint8_t joy_x_pos);
+uint8_t calculateDutyCycle(uint8_t servo_pos);
 
 #endif

@@ -1,8 +1,6 @@
 #ifndef MCP_DRIVER_H_
 #define MCP_DRIVER_H_
 
-#include "Parameters.h"
-
 /* resets MCP by SPI interface */
 void mcp_reset(void);
 

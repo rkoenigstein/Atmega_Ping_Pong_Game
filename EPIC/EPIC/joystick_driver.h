@@ -1,19 +1,20 @@
 #ifndef JOYS
 #define JOYS
 
-#define JOY_H 4
-#define JOY_V 5
-#define SL_L 7
-#define SL_R 6// 7
+//MUX values for ADC
+#define JOY_H 4 //Ch1, PIN3, JOY_x
+#define JOY_V 5 //Ch2, PIN4, JOY_y
+#define SL_R 6 //Ch3, PIN6, SLID_L
+#define SL_L 7 //Ch4, PIN5, SLID_R
 
 #include <stdbool.h>
 #include <stdint.h>
 
 typedef struct
 {
-	int x;
-	int y;
-	int dir;
+	uint8_t x;
+	uint8_t y;
+	uint8_t dir;
 } JOY_POS;
 
 typedef struct

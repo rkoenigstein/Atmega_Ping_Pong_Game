@@ -1,7 +1,9 @@
 #ifndef PARAMETERS_H_
 #define PARAMETERS_H_
 
-#define ATMEGA2560
+//#define ATMEGA2560
+
+#define MAX_STRING_LENGTH 16
 
 /* IDs for CAN messages */
 enum CAN_IDS {JOY, SLIDERS, BUTTONS, CAN_SLEEP, PLAY_SONG, SCORE};

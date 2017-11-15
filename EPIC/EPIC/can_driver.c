@@ -4,6 +4,8 @@
 #include "mcp2515.h"
 #include "spi_driver.h"
 #include "uart_driver.h"
+#include "Parameters.h"
+
 #include <stdio.h>
 #ifdef ATMEGA2560
 	#define F_CPU 16000000 // Clock speed
@@ -13,7 +15,7 @@
 
 #include <util/delay.h>
 
-#define NO_FILTERS_AND_MASKS 0x01100000
+#define NO_FILTERS_AND_MASKS 0b01100000
 #define TXREQ 0b00001000
 #define TXERR 0b00010000
 #define RTR_DATA_FRAME 0x0F
@@ -37,7 +39,7 @@ void can_init(void)
 	mcp_write(MCP_CANINTE, MCP_RX0IF);
 
 	//activate normal mode on the MCP2515 (only mode in which it can transmit CAN messages)
-	mcp_bit_modify(MODE_MASK, MCP_CANCTRL, MODE_NORMAL);
+	mcp_write(MCP_CANCTRL, MODE_NORMAL & MODE_MASK);
 
 	//enable CAN interrupts on the MCU
 	cli();
@@ -73,7 +75,7 @@ void can_message_send(can_message can_msg)
 	else
 	{
 		if(can_error())
-			printf("CAN transmission error\n");
+			printf("CAN transmission error \n");
 	}
 }
 
@@ -115,7 +117,6 @@ can_message can_data_receive(void)
 #ifdef ATMEGA2560
 	ISR(INT3_vect)
 	{
-		//printf("interrupted CAN!\n");
 		//clear interrupt bits for rx buffer 0
 		mcp_write(MCP_CANINTF, MCP_RX0IF & 0x00);
 		

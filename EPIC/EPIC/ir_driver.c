@@ -1,3 +1,9 @@
+#include "Parameters.h"
+#ifdef ATMEGA2560
+	#define F_CPU 16000000
+#else
+	#define F_CPU 4915200
+#endif
 #include <util/delay.h>
 #include "ir_driver.h"
 #include "data_fit.h"
@@ -16,7 +22,7 @@ void ir_init(void)
 
 int getIRValue(void)
 {
-	int value[10];
+	uint8_t value[10];
 
 	for(int i = 0; i < 10; i++)
 	{

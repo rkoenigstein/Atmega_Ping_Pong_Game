@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "spi_driver.h"
+#include "Parameters.h"
 
 #ifdef ATMEGA2560
 	#define DD_MOSI DDB2
