@@ -52,6 +52,7 @@ struct player
 };
 typedef struct player PLAYER;
 
+/* play ping pang */
 void ping_pong_idle(void);
 
 

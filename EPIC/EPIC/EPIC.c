@@ -12,6 +12,8 @@
 #include "joystick_driver.h"
 #include "spi_driver.h"
 #include "game_1.h"
+#include "pingpong.h"
+#include "MCP2515.h"
 
 #define F_CPU 4915200 // Clock speed
 #include <util/delay.h>
@@ -19,8 +21,10 @@
 //#include "graphic.h"
 
 MenuNode* menu_main;
-JOY_POS joy_pos, old_joy_pos;
-SLID slid_pos, old_slid_pos;
+
+JOY_POS joy_pos;
+uint8_t score = 0;
+
 uint8_t current_selection = 0;
 
 bool highscore_activated = true;
@@ -38,97 +42,30 @@ void main_init(void)
 	oled_init();
 	menu_main = getMenuRoot();
 	printf("INIT DONE\n");
-	_delay_ms(1000);
-}
-
-/* interrupt service routine catching undefined interrupts */
-ISR(BADISR_vect)
-{
-	//printf("Got undefined interrupts\n");
-}
-
-void sendJoyPos(void)
-{
-	can_message joy_msg = { .id = JOY, .length = 3, .data = {joy_pos.x, joy_pos.y, joy_pos.dir} };
-	can_message_send(joy_msg);
-}
-
-void sendButton(void)
-{
-	static uint16_t counter = 1;
-	uint8_t data_b[8] = { R, 0, 0, 0, 0, 0, 0, 0 };
-
-	if(!JOY_button(R) && !JOY_button(L))
-		return;
-
-	counter --;
-
-	if(JOY_button(L))
-		data_b[0] = L;
-
-	if(counter == 0)
-	{
-		can_message button_msg = { .id = BUTTONS, .length = 1, .data[0] = data_b[0] };
-		can_message_send(button_msg);
-		counter = 10;
-		printf("CAN Button sent\n");
-	}
-}
-
-void sendSliderPos(void)
-{
-	can_message slid_msg = { .id = SLIDERS, .length = 2, .data = {slid_pos.r, slid_pos.l}};
-	can_message_send(slid_msg);
 }
 
 int main(void)
 {
 	main_init();
 	
-	//say hello to the guy in front of the display
-	//sayHello();
-	//_delay_ms(2000);
+	//Optimization is in O3 because mallox cant allocate more memory for menus when playPingPong
+	//is added to the menu as the memory gets too full and fragmented for malloc
+	// -> ASK TUTUOR ON FRIDAY AND USE OTHER STUFF THAT WORKS
 	
+	//say hello to the guy in front of the display
+	sayHello();
+
 	//TEST_graphic();
 	//_delay_ms(2000);
 	//oled_test();
 	
-	/*while(1)
-	{
-		
-		//printf("HELLO\n");
-		//printf("Hi\n");
-		//print_buffer_to_serial();
-		_delay_ms(100);
-		joy_pos = JOY_getPosition();
-		slid_pos = SLID_getPosition();
-		
-		//printf("CAN JOY x=%d, y=%d, oldx=%d, oldy=%d\n", joy_pos.x, joy_pos.y, old_joy_pos.x, old_joy_pos.y);
-		if(joy_pos.x > old_joy_pos.x + 10 || joy_pos.y > old_joy_pos.y + 10 || joy_pos.x < old_joy_pos.x - 10 || joy_pos.y < old_joy_pos.y - 10)
-		{
-			sendJoyPos();
-			printf("CAN Joy sent\n");
-		}
-		_delay_ms(10);
-		sendButton();
-		_delay_ms(10);
-		if(slid_pos.r > old_slid_pos.r + 10 || slid_pos.l > old_slid_pos.l + 10 || slid_pos.r < old_slid_pos.r - 10 || slid_pos.l < old_slid_pos.l - 10)
-		{
-			//printf("old l: %d, old r: %d, new l: %d, new r: %d\n", old_slid_pos.l, old_slid_pos.r, slid_pos.l,slid_pos.r);
-			sendSliderPos();
-			//printf("slid r: %d slid l: %d \n", slid_pos.l, slid_pos.r);
-			printf("Can SLid sent\n");
-		}
-		_delay_ms(10);
-		old_joy_pos = joy_pos;
-		old_slid_pos = slid_pos;
-	}*/
 
 	while(1)
 	{
 
 		joy_pos = JOY_getPosition();
-		//sendJoyPos();
+		//printf("joy pos: %d, %d, %d \n", joy_pos.dir, joy_pos.x, joy_pos.y);
+		
 		_delay_ms(10);
 
 		switch(joy_pos.dir)
@@ -281,4 +218,52 @@ void storeHighscore(void)
 	print_string_to_buffer("button.", pos);
 	while(!JOY_button(0));
 	highscore_activated = !highscore_activated;*/
+}
+void handleCANmessage(can_message can_msg)
+{
+	switch(can_msg.id)
+	{
+		case(SCORE):
+		{
+			if(can_msg.length != 1)
+			{
+				//printf("WRONG length of CAN message for SCORE\n");
+				return;
+			}
+			score = can_msg.data[0];
+		}
+		default:
+		{
+			//printf("Unkwnon CAN message \n");
+		}break;
+	}
+	
+}
+
+ISR(INT0_vect)
+{
+	//clear interrupt bits for rx buffer 0
+	mcp_write(MCP_CANINTF, MCP_RX0IF & 0x00);
+	
+	//handle CAN message
+	can_message can_msg;
+	
+	//read upper 8 bit of id
+	can_msg.id = mcp_read(MCP_RXB0SIDH) << 3;
+	
+	//read lower 8 bit of id
+	can_msg.id |= mcp_read(MCP_RXB0SIDL) >> 5;
+	
+	//read length of CAN data
+	can_msg.length = mcp_read(MCP_RXB0DLC);
+	
+	//read CAN data
+	for(uint8_t i = 0; i < can_msg.length; i++)
+	can_msg.data[i] = mcp_read(MCP_RXB0D0+i);
+	
+	//allow new message to be received into the buffer
+	mcp_write(MCP_CANINTF, MCP_RX0IF & 0x00);
+	
+
+	handleCANmessage(can_msg);
 }

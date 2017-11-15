@@ -42,6 +42,7 @@ C_SRCS +=  \
 ../game_1.c \
 ../data_fit.c \
 ../mcp_driver.c \
+../pingpong.c \
 ../spi_driver.c \
 ../graphic.c \
 ../menu.c \
@@ -64,6 +65,7 @@ can_driver.o \
 game_1.o \
 data_fit.o \
 mcp_driver.o \
+pingpong.o \
 spi_driver.o \
 graphic.o \
 menu.o \
@@ -79,6 +81,7 @@ can_driver.o \
 game_1.o \
 data_fit.o \
 mcp_driver.o \
+pingpong.o \
 spi_driver.o \
 graphic.o \
 menu.o \
@@ -94,6 +97,7 @@ can_driver.d \
 game_1.d \
 data_fit.d \
 mcp_driver.d \
+pingpong.d \
 spi_driver.d \
 graphic.d \
 menu.d \
@@ -109,6 +113,7 @@ can_driver.d \
 game_1.d \
 data_fit.d \
 mcp_driver.d \
+pingpong.d \
 spi_driver.d \
 graphic.d \
 menu.d \
@@ -159,10 +164,12 @@ LINKER_SCRIPT_DEP+=
 
 
 
+
+
 ./%.o: .././%.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 4.8.1
-	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I".."  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=atmega162 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I".."  -O3 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=atmega162 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 

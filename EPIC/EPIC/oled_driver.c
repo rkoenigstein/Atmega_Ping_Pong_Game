@@ -80,8 +80,8 @@ void oled_print(uint8_t data)
 
 void clear_buffer(void)
 {
-	for(int i = 0; i < M; i++)
-		for(int j = 0; j < N; j++)
+	for(uint8_t i = 0; i < M; i++)
+		for(uint8_t j= 0; j < N; j++)
 		{
 			oled_buffer[i * N + j] = 0x00;
 		}
@@ -89,8 +89,8 @@ void clear_buffer(void)
 
 void ones_buffer(void)
 {
-	for(int i = 0; i < M; i++)
-		for(int j = 0; j < N; j++)
+	for(uint8_t i = 0; i < M; i++)
+		for(uint8_t j = 0; j < N; j++)
 		{
 			oled_buffer[i * N + j] = 0xFF;
 		}
@@ -225,6 +225,7 @@ void sayHello(void)
 		pos.page++;
 	}
 	print_buffer();
+	_delay_ms(2000);
 }
 
 void print_buffer_to_serial(void)

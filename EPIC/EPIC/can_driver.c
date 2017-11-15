@@ -1,9 +1,6 @@
 #include <avr/io.h>
 
 #include "can_driver.h"
-#include "mcp2515.h"
-#include "spi_driver.h"
-#include "uart_driver.h"
 #include "Parameters.h"
 
 #include <stdio.h>
@@ -114,24 +111,7 @@ can_message can_data_receive(void)
 }
 
 //interrupt service routine clearing the receive buffer interrupt bit to receive next message
-#ifdef ATMEGA2560
-	ISR(INT3_vect)
-	{
-		//clear interrupt bits for rx buffer 0
-		mcp_write(MCP_CANINTF, MCP_RX0IF & 0x00);
-		
-		msg_received_flag = 1;
-	}
-#else
-	ISR(INT0_vect)
-	{
-		//printf("Interrupted CAN!\n");
-		//clear interrupt bits for rx buffer 0
-		mcp_write(MCP_CANINTF, MCP_RX0IF & 0x00);
 
-		msg_received_flag = 1;
-	}	
-#endif
 
 void CAN_test(void)
 {

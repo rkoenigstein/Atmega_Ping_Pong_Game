@@ -12,6 +12,8 @@ data_fit.c
 
 mcp_driver.c
 
+pingpong.c
+
 spi_driver.c
 
 graphic.c

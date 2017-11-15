@@ -5,6 +5,9 @@
 #include <stdbool.h>
 #include <avr/interrupt.h>
 #include "mcp_driver.h"
+#include "mcp2515.h"
+#include "spi_driver.h"
+#include "uart_driver.h"
 
 typedef struct can_message
 {
@@ -36,5 +39,8 @@ void CAN_test(void);
 
 /* transmit test CAN msg */
 void CAN_send_dummy(void);
+
+/* handles CAN message and triggers corresponding action */
+void handleCANmessage(can_message can_msg);
 
 #endif

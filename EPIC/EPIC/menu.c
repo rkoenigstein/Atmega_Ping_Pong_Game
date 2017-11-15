@@ -23,13 +23,22 @@ extern void calibrateRightSlider(void);
 extern void calibrateJoystick(void);
 extern void showHighscore(void);
 extern void ping_pong_idle(void);
+extern void playPingPong(void);
 
 static MenuNode* _menu;
 
 MenuNode* createMenuNode(uint8_t title_id, void (*operation)(void), uint8_t num_of_submenus)
 {
 	MenuNode* _mnode = malloc(sizeof(MenuNode));
+	if(!_mnode)
+	{
+		printf("NO memory for menu %d\n", title_id);
+	}
 	_mnode->m_submenus = malloc(num_of_submenus*sizeof(MenuNode*));
+	if(!(_mnode->m_submenus))
+	{
+		printf("NO memory for submenu of menu %d\n", title_id);
+	}
 	_mnode->m_num_submenus = num_of_submenus;
 	_mnode->m_content.title_id = title_id;
 	_mnode->m_content.operation = operation;
@@ -64,16 +73,16 @@ void createMenu(void)
 {
 	_menu = createMenuNode(0, NULL, 4);
 	_menu->m_submenus[0] = createMenuNode(1, NULL, 2);
-	_menu->m_submenus[0]->m_submenus[0] = createMenuNode(2, NULL, 0);
-	_menu->m_submenus[0]->m_submenus[1] = createMenuNode(3, &ping_pong_idle, 0);
+	_menu->m_submenus[0]->m_submenus[0] = createMenuNode(2, &ping_pong_idle, 0);
+	_menu->m_submenus[0]->m_submenus[1] = createMenuNode(3, &playPingPong, 0);
 	_menu->m_submenus[1] = createMenuNode(4, &showHighscore, 0);
 	_menu->m_submenus[2] = createMenuNode(5, NULL, 4);
 	_menu->m_submenus[2]->m_submenus[0] = createMenuNode(6, &storeHighscore, 0);
 	_menu->m_submenus[2]->m_submenus[1] = createMenuNode(7, &resetHighscore, 0);
 	_menu->m_submenus[2]->m_submenus[2] = createMenuNode(8, &calibrateJoystick, 0);
 	_menu->m_submenus[2]->m_submenus[3] = createMenuNode(9, NULL, 2);
-	_menu->m_submenus[2]->m_submenus[3]->m_submenus[0] = createMenuNode(10, &calibrateLeftSlider, 0);
-	_menu->m_submenus[2]->m_submenus[3]->m_submenus[1] = createMenuNode(11, &calibrateRightSlider, 0);
+	_menu->m_submenus[2]->m_submenus[3]->m_submenus[0] = createMenuNode(10, NULL, 0);
+	_menu->m_submenus[2]->m_submenus[3]->m_submenus[1] = createMenuNode(11, NULL, 0);
 	_menu->m_submenus[3] = createMenuNode(12, NULL, 4);
 	/*
 	_menu->m_submenus[3]->m_submenus[0] = createMenuNode("Harry Potter", &play_song, 0);
@@ -87,7 +96,6 @@ void createMenu(void)
 	_menu->m_submenus[3]->m_submenus[3] = createMenuNode(16, NULL, 0);
 	assignParents(_menu);
 	printf("PARENTS ASSIGNED\n");
-
 }
 
 MenuNode* getNextEntry(MenuNode* node)

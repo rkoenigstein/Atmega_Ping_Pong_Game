@@ -21,19 +21,9 @@
 #include <stdbool.h>
 #include <avr/sleep.h>
 
-can_message can_msg;
-JOY_POS current_joy_pos;
-SLID current_slider;
 int cur_top = BOTTOM + (TOP-BOTTOM)/2;
 
 int score = 0;
-
-void sleep_init (void)
-{
-	//select Power-down mode
-	SMCR |= (1 << SM1);
-	SMCR &= ~(1 << SM0) & ~(1 << SM2);
-}
 
 void main_init (void)
 {
@@ -46,13 +36,24 @@ void main_init (void)
 	TWI_Master_Initialise();
 	sei();
 	motor_init();
-	//sleep_init();
 	//music_init();
 	printf("INIT DONE\n");
 }
 
-void go_to_sleep (void)
+void go_to_sleep(bool power_down)
 {
+	//select Power-down mode
+	if(power_down)
+	{
+		SMCR |= (1 << SM1);
+		SMCR &= ~(1 << SM0) & ~(1 << SM2);
+	}
+	else
+	{
+		SMCR |= (1 << SM0) | (1 << SM1);
+		SMCR &= ~(1 << SM2);
+	}
+	
 	// set SE to one
 	SMCR |= (1 << SE);
 
@@ -93,94 +94,17 @@ int main(void)
  {
 
 	main_init();
+	go_to_sleep(POWER_DOWN);
 
 	/*while(1)
 	{
 		play_song(1);
 	}*/
 	
-	
-	while(1)
-	{
 		//printf("hey\n");
 		//printf("IR value: %d\n", getIRValue());
 		//updateScore();
 		//printf("The score is %d\n", score);
-		//printRegisters();
-		_delay_ms(10);
-
-		can_msg = can_data_receive();
-
-		switch(can_msg.id)
-		{
-			case JOY:
-			{
-				printf("Got Joy pos \n");
-				if(can_msg.length != 3)
-				{
-					printf("ERROR IN CAN MSG, WRONG LENGTH FOR JOY POS\n");
-					break;
-				}
-				current_joy_pos.x = can_msg.data[R];
-				current_joy_pos.y = can_msg.data[L];
-				current_joy_pos.dir = can_msg.data[DIR];
-				printf("JOY x: %d, JOY y: %d, JOY dir: %d\n", current_joy_pos.x, current_joy_pos.y, current_joy_pos.dir);
-				setMotorPosition(current_joy_pos);
-				break;
-			}
-			case BUTTONS:
-			{
-				uint8_t button = can_msg.data[0];
-				printf("Got button: %d\n", button);
-				if(can_msg.length != 1)
-				{
-					printf("ERROR IN CAN MSG, WRONG LENGTH FOR BUTTONS\n");
-					break;
-				}
-				if (button == R)
-				{
-					shoot();
-					printf("Right button SHOOT\n");
-				}
-				if (button == L)
-					printf("Left button Press the other button\n");
-				break;
-			}
-			case SLIDERS:
-			{
-				printf("Got sliders\n");
-				if(can_msg.length != 2)
-				{
-					printf("ERROR IN CAN MSG, WRONG LENGTH FOR SLIDERS\n");
-					break;
-				}
-				current_slider.r = can_msg.data[R];
-				current_slider.l = can_msg.data[L];
-				//printf("right slider: %d, left slider: %d\n", current_slider.r, current_slider.l);
-				update_OCR(current_slider.r);
-				break;
-			}
-			case CAN_SLEEP:
-			{
-				printf("Go to sleep, send me a CAN message so that I will wake up\n");
-				go_to_sleep();
-				printf("Woke up\n");
-				break;
-			}
-			case PLAY_SONG:
-			{
-				printf("Playing music\n");
-				//play_song(can_msg.data[0]);
-				break;
-			}
-			default:
-			{
-				printf("CAN ID unknown\n");
-				break;
-			}
-		}
-
-    }
 
 	//TEST_music();
 	//test_shoot();
@@ -196,5 +120,109 @@ void test_shoot(void)
 		printf("Attempt %d\n", i);
 		i++;
 		_delay_ms(2000);
+	}
+}
+
+ISR(INT3_vect)
+{
+	//clear interrupt bits for rx buffer 0
+	mcp_write(MCP_CANINTF, MCP_RX0IF & 0x00);
+	
+	//handle CAN message
+	can_message can_msg;
+	
+	//read upper 8 bit of id
+	can_msg.id = mcp_read(MCP_RXB0SIDH) << 3;
+	
+	//read lower 8 bit of id
+	can_msg.id |= mcp_read(MCP_RXB0SIDL) >> 5;
+	
+	//read length of CAN data
+	can_msg.length = mcp_read(MCP_RXB0DLC);
+	
+	//read CAN data
+	for(uint8_t i = 0; i < can_msg.length; i++)
+	can_msg.data[i] = mcp_read(MCP_RXB0D0+i);
+	
+	//allow new message to be received into the buffer
+	mcp_write(MCP_CANINTF, MCP_RX0IF & 0x00);
+	
+	handleCANmessage(can_msg);
+}
+
+void handleCANmessage(can_message can_msg)
+{
+	static JOY_POS current_joy_pos;
+	static SLID current_slider;
+	
+	switch(can_msg.id)
+	{
+		case JOY:
+		{
+			printf("Got Joy pos \n");
+			if(can_msg.length != 3)
+			{
+				printf("ERROR IN CAN MSG, WRONG LENGTH FOR JOY POS\n");
+				break;
+			}
+			current_joy_pos.x = can_msg.data[R];
+			current_joy_pos.y = can_msg.data[L];
+			current_joy_pos.dir = can_msg.data[DIR];
+			printf("JOY x: %d, JOY y: %d, JOY dir: %d\n", current_joy_pos.x, current_joy_pos.y, current_joy_pos.dir);
+			setMotorPosition(current_joy_pos);
+			break;
+		}
+		case BUTTONS:
+		{
+			uint8_t button = can_msg.data[0];
+			printf("Got button: %d\n", button);
+			if(can_msg.length != 1)
+			{
+				printf("ERROR IN CAN MSG, WRONG LENGTH FOR BUTTONS\n");
+				break;
+			}
+			if (button == R)
+			{
+				shoot();
+				printf("Right button SHOOT\n");
+			}
+			if (button == L)
+			printf("Left button Press the other button\n");
+			break;
+		}
+		case SLIDERS:
+		{
+			printf("Got sliders\n");
+			if(can_msg.length != 2)
+			{
+				printf("ERROR IN CAN MSG, WRONG LENGTH FOR SLIDERS\n");
+				break;
+			}
+			current_slider.r = can_msg.data[R];
+			current_slider.l = can_msg.data[L];
+			//printf("right slider: %d, left slider: %d\n", current_slider.r, current_slider.l);
+			update_OCR(current_slider.r);
+			break;
+		}
+		case CAN_SLEEP:
+		{
+			printf("Go to sleep, send me a CAN message so that I will wake up\n");
+			go_to_sleep(POWER_DOWN);
+			printf("Woke up\n");
+			break;
+		}
+		case PLAY_SONG:
+		{
+			go_to_sleep(POWER_SAVE);
+			printf("Playing music\n");
+			//play_song(can_msg.data[0]);
+			break;
+		}
+		default:
+		{
+			printf("CAN ID unknown\n");
+			go_to_sleep(POWER_DOWN);
+			break;
+		}
 	}
 }

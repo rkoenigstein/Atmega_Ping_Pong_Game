@@ -17,4 +17,8 @@ enum CAN_POS {R, L, DIR};
 #define CANTINA_BAND 2
 #define POKEMON 3
 
+//sleep modes
+#define POWER_DOWN 1
+#define POWER_SAVE 0
+
 #endif

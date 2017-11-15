@@ -365,12 +365,12 @@ void ping_pong_idle(void)
 				position pos;
 				pos.column=45;
 				pos.page=1;
-				print_string_to_buffer("PAUSE", pos);
+				//print_string_to_buffer("PAUSE", pos);
 				pos.page = 3;
 				pos.column=2;
-				print_string_to_buffer("LEFT: resume", pos);
+				//print_string_to_buffer("LEFT: resume", pos);
 				pos.page++;
-				print_string_to_buffer("RIGHT: leave", pos);
+				//print_string_to_buffer("RIGHT: leave", pos);
 				if (JOY_getPosition().dir == LEFT)
 					pause = false;
 				if(JOY_getPosition().dir == RIGHT)
@@ -385,16 +385,16 @@ void ping_pong_idle(void)
 		pos.column=30;
 		pos.page=3;
 		clear_buffer();
-		print_string_to_buffer("GAME OVER!", pos);
+		//print_string_to_buffer("GAME OVER!", pos);
 		print_buffer();
 		_delay_ms(2000);
 		
 		clear_buffer();
 		pos.page = 3;
 		pos.column = 2;
-		print_string_to_buffer("LEFT: restart", pos);
+		//print_string_to_buffer("LEFT: restart", pos);
 		pos.page++;
-		print_string_to_buffer("RIGHT: leave", pos);
+		//print_string_to_buffer("RIGHT: leave", pos);
 		print_buffer();
 		
 		while(1)
