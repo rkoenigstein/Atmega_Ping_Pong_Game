@@ -12,9 +12,13 @@
 #endif
 #include <util/delay.h>
 
+#define PRESCALER 8
+
 #define MUSIC_OUT_PORT DDRL
 #define MUSIC_PORT PORTL
 #define MUSIC_PIN DDL3
+
+#define DEFAULT_WHOLE_NOTE_DURATION 4000
 
 /* initialize pin for buzzer output */
 void music_init(void);
