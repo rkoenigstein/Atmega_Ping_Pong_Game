@@ -65,7 +65,7 @@ char spi_SlaveReceive(void)
 
 void spi_TEST(void)
 {
-	char data='a';
+	char data = 'a';
 	spi_MasterTransmit(data);
 	data = spi_SlaveReceive();
 }

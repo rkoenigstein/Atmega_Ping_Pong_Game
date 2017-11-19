@@ -24,15 +24,6 @@ struct rect
 };
 typedef struct rect RECT;
 
-//define position and dimension of a circle
-struct circ
-{
-    POS pos;
-    uint8_t r;    //radius of the circle
-    uint8_t full; //full or just the border
-};
-typedef struct circ CIRC;
-
 //define position dimension and orientation of a equilateral triangle
 struct tri
 {
@@ -46,9 +37,6 @@ typedef struct tri TRI;
 /* draw a rectangle */
 void draw_rectangle_buffer(RECT rect);
 
-/* draw a circle */
-void draw_circle_buffer(CIRC circ);
-
 /* draw one bit */
 void draw_one_bit_buffer(POS bit);
 
@@ -59,6 +47,6 @@ void draw_triangle_buffer(TRI tri);
 void TEST_graphic(void);
 
 /* test animation */
-void TEST_animation(void);
+void animations(void);
 
 #endif

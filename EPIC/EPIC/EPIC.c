@@ -13,6 +13,7 @@
 #include "spi_driver.h"
 #include "game_1.h"
 #include "pingpong.h"
+#include "song_handler.h"
 #include "MCP2515.h"
 
 #define F_CPU 4915200 // Clock speed
@@ -23,24 +24,25 @@
 MenuNode* menu_main;
 
 JOY_POS joy_pos;
-uint8_t score = 0;
 
 uint8_t current_selection = 0;
 
-bool highscore_activated = true;
-
-uint8_t highscore[7] = { 0, 0, 0, 0, 0, 0, 0 };
-
 void main_init(void)
 {
+	cli();
 	uart_init();
+	printf("start init\n");
 	sram_init();
 	adc_init();
 	USB_init();
 	can_init();
-	sei();
 	oled_init();
 	menu_main = getMenuRoot();
+	send_stop_CAN();
+	can_message song_msg = { .id = STOP_PING_PONG, .length = 0 };
+	can_message_send(song_msg);
+	_delay_ms(10);
+	sei();
 	printf("INIT DONE\n");
 }
 
@@ -48,17 +50,8 @@ int main(void)
 {
 	main_init();
 	
-	//Optimization is in O3 because mallox cant allocate more memory for menus when playPingPong
-	//is added to the menu as the memory gets too full and fragmented for malloc
-	// -> ASK TUTUOR ON FRIDAY AND USE OTHER STUFF THAT WORKS
-	
 	//say hello to the guy in front of the display
 	sayHello();
-
-	//TEST_graphic();
-	//_delay_ms(2000);
-	//oled_test();
-	
 
 	while(1)
 	{
@@ -140,111 +133,8 @@ void testCANconnection(void)
 	}*/
 }
 
-/*void send_song_CAN(uint8_t song)
-{
-	can_message song_msg = { .id = PLAY_SONG, .length = 1, .data = {song} };
-	can_message_send(song_msg);
-}
-
-void song_harry_potter(void)
-{
-	send_song_CAN(HARRY_POTTER);
-}
-
-void song_cantina_band(void)
-{
-	send_song_CAN(CANTINA_BAND);
-}
-
-void song_pokemon(void)
-{
-	send_song_CAN(POKEMON);
-}
-
-void song_tetris(void)
-{
-	send_song_CAN(TETRIS);
-}*/
-
-void showHighscore(void)
-{
-	/*position pos = { .page = 0, .column = 1 };
-	print_string_to_buffer("HIGHSCORE", pos);
-	pos.page++;
-	char place[1];
-	char high[7];
-
-	//prepare strings
-	for(int i = 0; i < 8; i++)
-	{
-		char entry[16];
-		strcpy(entry, "No. ");
-		strcpy(entry, itoa(i, place[i], 10));
-		strcpy(entry, ": ");
-		strcpy(entry, itoa(highscore[i], high[i], 10));
-		print_string_to_buffer(entry, pos);
-		pos.page++;
-	}
-	print_buffer();*/
-}
-
-void resetHighscore(void)
-{
-	/*for(int i = 0; i < 8; i++)
-		highscore[i] = 0;*/
-}
-
-void storeHighscore(void)
-{
-	/*position pos = { .page = 0, .column = 1 };
-	print_string_to_buffer("Highscore is", pos);
-	pos.page++;
-	if(highscore_activated)
-	{
-		print_string_to_buffer("activated. To", pos);
-		pos.page++;
-		print_string_to_buffer("deactivate,", pos);
-	}
-	else
-	{
-		print_string_to_buffer("deactivated.", pos);
-		pos.page++;
-		print_string_to_buffer("To activate,", pos);
-	}
-
-	pos.page++;
-	print_string_to_buffer("press left", pos);
-	pos.page++;
-	print_string_to_buffer("button.", pos);
-	while(!JOY_button(0));
-	highscore_activated = !highscore_activated;*/
-}
-void handleCANmessage(can_message can_msg)
-{
-	switch(can_msg.id)
-	{
-		case(SCORE):
-		{
-			if(can_msg.length != 1)
-			{
-				//printf("WRONG length of CAN message for SCORE\n");
-				return;
-			}
-			score = can_msg.data[0];
-		}
-		default:
-		{
-			//printf("Unkwnon CAN message \n");
-		}break;
-	}
-	
-}
-
 ISR(INT0_vect)
 {
-	//clear interrupt bits for rx buffer 0
-	mcp_write(MCP_CANINTF, MCP_RX0IF & 0x00);
-	
 	//handle CAN message
 	can_message can_msg;
 	
@@ -259,11 +149,23 @@ ISR(INT0_vect)
 	
 	//read CAN data
 	for(uint8_t i = 0; i < can_msg.length; i++)
-	can_msg.data[i] = mcp_read(MCP_RXB0D0+i);
+		can_msg.data[i] = mcp_read(MCP_RXB0D0+i);
 	
-	//allow new message to be received into the buffer
+	switch(can_msg.id)
+	{
+		case(SCORE):
+		{
+			printf("Got new score: %d \n", can_msg.data[0]);
+			setScore(can_msg.data[0]);
+			break;
+		}
+		default:
+		{
+			printf("Unknown CAN message \n");
+			break;
+		}
+	}
+	
+	//clear interrupt bits for rx buffer 0
 	mcp_write(MCP_CANINTF, MCP_RX0IF & 0x00);
-	
-
-	handleCANmessage(can_msg);
 }

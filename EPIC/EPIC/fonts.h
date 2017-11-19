@@ -7,7 +7,6 @@
 #ifndef FONTS_H_
 #define FONTS_H_
 
-
 #include <avr/pgmspace.h>
 
 // Font 8x8 - Large
@@ -306,6 +305,5 @@ const unsigned char PROGMEM font4[95][4] = {
 		{0b10000100,0b01111000,0b00010000,0b00000000}, // }
 		{0b00001000,0b00000100,0b00001000,0b00000100}, // ~
 		};
-
 
 #endif /* FONTS_H_ */

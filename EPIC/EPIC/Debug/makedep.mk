@@ -14,6 +14,8 @@ mcp_driver.c
 
 pingpong.c
 
+song_handler.c
+
 spi_driver.c
 
 graphic.c

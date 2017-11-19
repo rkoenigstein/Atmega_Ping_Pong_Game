@@ -14,7 +14,7 @@ void sram_init(void)
 
 void TEST_write_adress(void)
 {
-	int * a = (int *) 0x0fff;
+	/*int * a = (int *) 0x0fff;
 	while(1)
 	{
 		a = (int *) 0x0fff;
@@ -23,12 +23,12 @@ void TEST_write_adress(void)
 		a = (int *) 0x0501;
 		*a = 0x44;
 		_delay_ms(1000);
-	}
+	}*/
 }
 
 void TEST_GAL(void)
 {
-	volatile int *a = 0;
+	/*volatile int *a = 0;
 	int b = -1;
 	while(1)
 	{
@@ -40,12 +40,12 @@ void TEST_GAL(void)
 			//SRAM: active high chip select
 			*a = 0xf;
 		}
-	}
+	}*/
 }
 
 void TEST_ADC(void)
 {
-	volatile int *a = 0;
+	/*volatile int *a = 0;
 	int b = -1;
 	while(1)
 	{
@@ -57,12 +57,12 @@ void TEST_ADC(void)
 			//SRAM: active high chip select
 			printf((char*)a);
 		}
-	}
+	}*/
 }
 
 void TEST_SRAM_test(void)
 {
-	volatile char *ext_ram = (char *) 0x1800; // Start address for the SRAM
+	/*volatile char *ext_ram = (char *) 0x1800; // Start address for the SRAM
 	uint16_t ext_ram_size = 0x800;
 	uint16_t write_errors = 0;
 	uint16_t retrieval_errors = 0;
@@ -94,5 +94,5 @@ void TEST_SRAM_test(void)
 			retrieval_errors++;
 		}
 	}
-	printf("SRAM test completed with \n %4d errors in write phase and \n %4d errors in retrieval phase\n\n", write_errors, retrieval_errors);
+	printf("SRAM test completed with \n %4d errors in write phase and \n %4d errors in retrieval phase\n\n", write_errors, retrieval_errors);*/
 }

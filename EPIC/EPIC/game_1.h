@@ -7,6 +7,7 @@
 #include "graphic.h"
 #include "oled_driver.h"
 #include "Parameters.h"
+#include "song_handler.h"
 
 //screen parameters
 #define M 				8
@@ -34,7 +35,6 @@
 #define B_X				0
 #define B_Y				30
 
-
 enum{UP_RIGHT, UP_LEFT, DOWN_RIGHT, DOWN_LEFT}; //for ball which moves 45°
 
 //define a ball
@@ -45,6 +45,7 @@ struct ball
 };
 typedef struct ball BALL;
 
+//define a player (bar)
 struct player
 {
 	RECT rect;
@@ -52,8 +53,7 @@ struct player
 };
 typedef struct player PLAYER;
 
-/* play ping pang */
+/* play ping pang or bar game */
 void ping_pong_idle(void);
-
 
 #endif

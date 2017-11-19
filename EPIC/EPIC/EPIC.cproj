@@ -82,6 +82,7 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
       <AvrGcc>
+  <avrgcc.common.ExternalRamMemOvflw>True</avrgcc.common.ExternalRamMemOvflw>
   <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
   <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
   <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
@@ -99,7 +100,7 @@
       <Value>..</Value>
     </ListValues>
   </avrgcc.compiler.directories.IncludePaths>
-  <avrgcc.compiler.optimization.level>Optimize most (-O3)</avrgcc.compiler.optimization.level>
+  <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
   <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
   <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
   <avrgcc.compiler.optimization.DebugLevel>Default (-g2)</avrgcc.compiler.optimization.DebugLevel>
@@ -154,6 +155,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="pingpong.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="song_handler.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="song_handler.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="spi_driver.h">

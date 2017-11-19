@@ -92,7 +92,7 @@ uint8_t mcp_read_status(void)
 	return received_char;
 }
 
-void mcp_bit_modify(uint8_t mask_byte, uint8_t reg_adr, uint8_t data )
+/*void mcp_bit_modify(uint8_t mask_byte, uint8_t reg_adr, uint8_t data )
 {
 	selectSlave();
 
@@ -103,7 +103,7 @@ void mcp_bit_modify(uint8_t mask_byte, uint8_t reg_adr, uint8_t data )
 
 	deselectSlave();
 
-}
+}*/
 
 void mcp_request_to_send (uint8_t out_buffer)
 {

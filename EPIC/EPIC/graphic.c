@@ -4,6 +4,7 @@
 #include "joystick_driver.h"
 #include "oled_driver.h"
 #include "graphic.h"
+#include "song_handler.h"
 
 #ifdef ATMEGA2560
 	#define F_CPU 16000000
@@ -13,6 +14,8 @@
 #include <util/delay.h>
 
 volatile uint8_t* display_buffer = (uint8_t *) 0x1800;
+
+uint8_t full = 0;
 
 /* takes the Ly vlaue of a rectangle and convert it to a char */
 uint8_t Ly_2_char(int start, int Ly)
@@ -40,12 +43,10 @@ int bit_page_calc(RECT rect)
 
 void draw_rectangle_buffer(RECT rect)
 {
-    int i = 0;
-    int j = 0;
     POS current;
 
-    for(i = rect.pos.x; i < rect.Lx + rect.pos.x; i++)
-      for(j = rect.pos.y; j < rect.Ly + rect.pos.y; j++)
+    for(int i = rect.pos.x; i < rect.Lx + rect.pos.x; i++)
+      for(int j = rect.pos.y; j < rect.Ly + rect.pos.y; j++)
       {
 		current.x = i;
 		current.y = j;
@@ -64,12 +65,12 @@ void draw_rectangle_buffer(RECT rect)
 			}
 			case(TRI_EMPT):
 			{
-				if(((i == rect.pos.x) && (j == rect.pos.y)) || ((i == rect.Lx + rect.pos.x - 1) && (j == rect.Ly + rect.pos.y - 1)))
+				if(((i == rect.pos.x) && (j == rect.pos.y)) || ((i == rect.Lx + rect.pos.x - 1) && (j == rect.Ly + rect.pos.y - 1)) || (full == 1))
 				draw_one_bit_buffer(current);
 				break;
 			}
-			}
-      }
+		}
+     }
 }
 
 void draw_one_bit_buffer(POS bit)
@@ -86,56 +87,14 @@ void draw_one_bit_buffer(POS bit)
 	  display_buffer[(int) bit.y / 8 * N + bit.x] |= res;
 }
 
-void draw_circle_buffer(CIRC circ) // DOESN'T WOOOOOORKKKK
-{
-  	POS current = circ.pos;
-  	POS distance;
-  	draw_one_bit_buffer(circ.pos);
-  	int flag = 1;
-  	do
-  	{
-  		distance.x = abs(current.x - circ.pos.x);
-  		distance.y = abs(current.y - circ.pos.y);
-
-  		draw_one_bit_buffer(current);
-
-  		if(distance.x * distance.x + distance.y * distance.y > circ.r * circ.r)
-  			flag++;
-
-  		if(flag == 1){
-  			current.x++;
-  			current.y++;
-  		}
-
-  		current = circ.pos;
-  		if(flag == 2){
-  			current.x--;
-  			current.y++;
-  		}
-
-  		current = circ.pos;
-  		if(flag == 3){
-  			current.x--;
-  			current.y--;
-  		}
-
-  		current = circ.pos;
-  		if(flag == 4){
-  			current.x++;
-  			current.y--;
-  		}
-
-  		current = circ.pos;
-  	} while(flag > 4);
-}
-
 void draw_triangle_buffer(TRI tri)
 {
     RECT rect;
-	int i=0;
+	int i = 0;
     rect.pos.x = tri.pos.x;
     rect.pos.y = tri.pos.y;
     rect.full = tri.full;
+	full = 1;
     switch (tri.ori)
     {
         case RIGHT:
@@ -146,6 +105,7 @@ void draw_triangle_buffer(TRI tri)
             do
             {
                 draw_rectangle_buffer(rect);
+				full = 0;
                 rect.Ly -= 2;
 				i -= 2;
                 rect.pos.y++;
@@ -162,6 +122,7 @@ void draw_triangle_buffer(TRI tri)
 			do
             {
                 draw_rectangle_buffer(rect);
+				full = 0;
                 rect.Ly -= 2;
 				i -= 2;
                 rect.pos.y++;
@@ -178,6 +139,7 @@ void draw_triangle_buffer(TRI tri)
             do
             {
                 draw_rectangle_buffer(rect);
+				full = 0;
                 rect.Lx -= 2;
 				i -= 2;
                 rect.pos.y++;
@@ -194,6 +156,7 @@ void draw_triangle_buffer(TRI tri)
 			do
             {
                 draw_rectangle_buffer(rect);
+				full = 0;
                 rect.Lx -= 2;
 				i -= 2;
                 rect.pos.y--;
@@ -203,9 +166,7 @@ void draw_triangle_buffer(TRI tri)
             break;
         }
         default:
-        {
             break;
-        }
     }
 }
 
@@ -218,7 +179,7 @@ void TEST_graphic(void)
 	rect.pos.y = 0;
 	rect.Lx = 10;
 	rect.Ly = 10;
-	rect.full = TRI_EMPT;
+	rect.full = RECT_EMPT;
 	draw_rectangle_buffer(rect);
 	rect.pos.x = 105;
 	rect.pos.y = 7;
@@ -227,85 +188,93 @@ void TEST_graphic(void)
 	TRI tri;
 	tri.pos.x = 33;
 	tri.pos.y = 33;
-	tri.l = 33;
-	tri.ori = UP;
-	tri.full = FULL;
+	tri.l = 20;
+	tri.ori = RIGHT;
+	tri.full = TRI_EMPT;
 	draw_triangle_buffer(tri);
-	/*tri.ori = DOWN;
+	tri.ori = DOWN;
 	tri.pos.y = 43;
-	tri.pos.x = 70;
+	tri.pos.x = 10;
 	tri.full = FULL;
 	draw_triangle_buffer(tri);
-	//draw_triangle_buffer(tri);*/
-	/*CIRC circ;
-	circ.pos.x = 70;
-	circ.pos.y = 20;
-	circ.r = 15;
-	draw_circle_buffer(circ);*/
-	POS bit = { .x = 20, .y = 50 };
-	draw_one_bit_buffer(bit);
-	bit.x = 0;
-	bit.y = 0;
-	draw_one_bit_buffer(bit);
-	bit.x = 1;
-	bit.y = 1;
-	draw_one_bit_buffer(bit);
-	bit.x = 2;
-	bit.y = 2;
-	draw_one_bit_buffer(bit);
-	bit.x = 3;
-	bit.y = 3;
-	draw_one_bit_buffer(bit);
-	bit.x = 4;
-	bit.y = 4;
-	draw_one_bit_buffer(bit);
-	bit.x = 5;
-	bit.y = 5;
-	draw_one_bit_buffer(bit);
-	bit.x = 6;
-	bit.y = 6;
-	draw_one_bit_buffer(bit);
-	bit.x = 7;
-	bit.y = 7;
-	draw_one_bit_buffer(bit);
-	bit.x = 8;
-	bit.y = 8;
-	draw_one_bit_buffer(bit);
-	bit.x = 9;
-	bit.y = 9;
-	draw_one_bit_buffer(bit);
-	bit.x = 10;
-	bit.y = 10;
-	draw_one_bit_buffer(bit);
-	bit.x = 11;
-	bit.y = 11;
-	draw_one_bit_buffer(bit);
+	draw_triangle_buffer(tri);
 	print_buffer();
 	_delay_ms(2000);
-	//print_buffer_to_serial();
 }
-void TEST_animation(void)
+
+void animations(void)
 {
+	send_song_CAN(HARRY_POTTER);
+	
+	clear_buffer();
+	position strin;
+	strin.column = 4;
+	strin.page = 3;
+	
+	print_string_to_buffer("HAVE FUN WITH", strin);
+	strin.page++;
+	print_string_to_buffer("SQUARES AND", strin);
+	strin.page++;
+	print_string_to_buffer("TRIANGLES", strin);
+	
+	while(JOY_getPosition().dir != NEUTRAL);
+
 	TRI tri;
-	tri.pos.x = 128 / 2 - 15 / 2;
+	tri.pos.x = 33;
 	tri.pos.y = 0;
-	tri.l = 15;
-	tri.ori = DOWN;
-	int i = 0;
-
+	tri.l = 10;
+	tri.ori = RIGHT;
+	tri.full = FULL;
 	draw_triangle_buffer(tri);
-
-	for(i = 0; i < 63; i++)
+	
+	RECT rect;
+	rect.pos.x = 0;
+	rect.pos.y = 0;
+	rect.Lx = 10;
+	rect.Ly = 10;
+	rect.full = RECT_EMPT;
+	draw_rectangle_buffer(rect);
+	
+	print_buffer();
+	_delay_ms(2000);
+	
+	while (JOY_getPosition().dir != UP)
 	{
-		//oled_init();
 		clear_buffer();
-		//print_buffer();
-		tri.pos.y++;
+		tri.pos.x++;
+		if(tri.pos.x + tri.l == 120)
+		{
+			tri.pos.x = 33;
+			tri.pos.y = 33;
+			tri.l = 20;
+			if(tri.full == FULL)
+				tri.full = TRI_EMPT;
+			else
+				tri.full = FULL;
+			tri.ori++;
+			if(tri.ori == DOWN)
+				tri.ori = LEFT;
+		}
 		draw_triangle_buffer(tri);
-		//printGreetings();
+		
+		rect.pos.x += 2;
+		rect.pos.y++;
+		if(rect.pos.y + rect.Ly == 50)
+		{
+			rect.pos.x = 0;
+			rect.pos.y = 0;
+			rect.Lx = 10;
+			rect.Ly = 10;
+			if(rect.full == FULL)
+				rect.full = RECT_EMPT;
+			else
+				rect.full = FULL;
+		}
+		draw_rectangle_buffer(rect);
+		
 		print_buffer();
-		_delay_ms(20);
+		_delay_ms(10);	
 	}
-
-
+	
+	send_stop_CAN();
 }

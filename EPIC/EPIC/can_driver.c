@@ -39,16 +39,14 @@ void can_init(void)
 	mcp_write(MCP_CANCTRL, MODE_NORMAL & MODE_MASK);
 
 	//enable CAN interrupts on the MCU
-	cli();
 	#ifdef ATMEGA2560
-		EICRB &= ~(1 << ISC31);
 		EICRB &= ~(1 << ISC30);
+		EICRB &= ~(1 << ISC31);
 		EIMSK |= (1 << INT3);
 	#else
 		MCUCR |= (1 << ISC11);
 		GICR |= (1 << INT0);
 	#endif
-	sei();
 }
 
 void can_message_send(can_message can_msg)
@@ -109,9 +107,6 @@ can_message can_data_receive(void)
 
 	return can_msg;
 }
-
-//interrupt service routine clearing the receive buffer interrupt bit to receive next message
-
 
 void CAN_test(void)
 {

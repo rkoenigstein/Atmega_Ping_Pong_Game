@@ -5,6 +5,7 @@
 void uart_init(void)
 {
 	uint8_t ubrr = MYUBRR;
+	
 	//set baudrate to 9600
 	UBRR0H = (uint8_t) (ubrr >> 8);
 	UBRR0L = (uint8_t) ubrr;
@@ -70,7 +71,7 @@ void uart_putstring(char* name)
 
 void TEST_reciver_transmitter_string(void)
 {
-	 uart_init();
+	 /*uart_init();
 
 	 char c;
 	 char* hello_string = "Hello World";
@@ -84,5 +85,5 @@ void TEST_reciver_transmitter_string(void)
 		 c = uart_getc();
 		 uart_putc(c);
 		 _delay_ms(100);
-	 }
+	 }*/
 }

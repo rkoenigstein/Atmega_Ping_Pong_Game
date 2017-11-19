@@ -15,85 +15,81 @@ extern void song_harry_potter(void);
 extern void song_tetris(void);
 extern void song_cantina_band(void);
 extern void song_pokemon(void);
+extern void song_octaves(void);
+extern void song_merry_x_mas(void);
+extern void song_jingle_bells(void);
+extern void song_last_christmas(void);
 
-extern void storeHighscore(void);
-extern void resetHighscore(void);
 extern void calibrateLeftSlider(void);
 extern void calibrateRightSlider(void);
 extern void calibrateJoystick(void);
-extern void showHighscore(void);
 extern void ping_pong_idle(void);
 extern void playPingPong(void);
+extern void irSettings(void);
+extern void printGreetings(void);
+extern void animations(void);
 
 static MenuNode* _menu;
 
 MenuNode* createMenuNode(uint8_t title_id, void (*operation)(void), uint8_t num_of_submenus)
 {
-	MenuNode* _mnode = malloc(sizeof(MenuNode));
-	if(!_mnode)
-	{
-		printf("NO memory for menu %d\n", title_id);
-	}
-	_mnode->m_submenus = malloc(num_of_submenus*sizeof(MenuNode*));
-	if(!(_mnode->m_submenus))
-	{
-		printf("NO memory for submenu of menu %d\n", title_id);
-	}
+	static uint16_t current_adress = 0x1C00;
+	
+	MenuNode* _mnode = (void *) current_adress;
+	current_adress += sizeof(MenuNode);
+
+	_mnode->m_submenus = (void *) current_adress;
+	current_adress += num_of_submenus * sizeof(MenuNode *);
+
 	_mnode->m_num_submenus = num_of_submenus;
 	_mnode->m_content.title_id = title_id;
+	//printf("title id: %d, memory addr: 0x%02x\n", title_id, current_adress - num_of_submenus * sizeof(MenuNode *));
 	_mnode->m_content.operation = operation;
+	
+	if(current_adress >= 0x1FFF)
+		printf("Menu out of memory\n");
 	return _mnode;
 }
 
 static void assignParents(MenuNode* node)
 {
-	if(node)
+	for(uint8_t i = 0; i < node->m_num_submenus; i++)
 	{
-		for(uint8_t i = 0; i < node->m_num_submenus; i++)
-		{
-			node->m_submenus[i]->m_parent = node;
-			assignParents(node->m_submenus[i]);
-		}
-	}
-	if(!node)
-		printf("NULL node\n");
+		node->m_submenus[i]->m_parent = node;
+		assignParents(node->m_submenus[i]);
+	}	
 }
 
 MenuNode* getMenuRoot(void)
 {
-	if(_menu == NULL)
-	{
-		createMenu();
-	}
+	createMenu();
 	return _menu;
 }
 
 
 void createMenu(void)
 {
-	_menu = createMenuNode(0, NULL, 4);
+	_menu = createMenuNode(0, NULL, 5);
 	_menu->m_submenus[0] = createMenuNode(1, NULL, 2);
-	_menu->m_submenus[0]->m_submenus[0] = createMenuNode(2, &ping_pong_idle, 0);
-	_menu->m_submenus[0]->m_submenus[1] = createMenuNode(3, &playPingPong, 0);
-	_menu->m_submenus[1] = createMenuNode(4, &showHighscore, 0);
-	_menu->m_submenus[2] = createMenuNode(5, NULL, 4);
-	_menu->m_submenus[2]->m_submenus[0] = createMenuNode(6, &storeHighscore, 0);
-	_menu->m_submenus[2]->m_submenus[1] = createMenuNode(7, &resetHighscore, 0);
-	_menu->m_submenus[2]->m_submenus[2] = createMenuNode(8, &calibrateJoystick, 0);
-	_menu->m_submenus[2]->m_submenus[3] = createMenuNode(9, NULL, 2);
-	_menu->m_submenus[2]->m_submenus[3]->m_submenus[0] = createMenuNode(10, NULL, 0);
-	_menu->m_submenus[2]->m_submenus[3]->m_submenus[1] = createMenuNode(11, NULL, 0);
-	_menu->m_submenus[3] = createMenuNode(12, NULL, 4);
-	/*
-	_menu->m_submenus[3]->m_submenus[0] = createMenuNode("Harry Potter", &play_song, 0);
-	_menu->m_submenus[3]->m_submenus[1] = createMenuNode("Tetris", &play_song, 0);
-	_menu->m_submenus[3]->m_submenus[2] = createMenuNode("Cantina Band", &play_song, 0);
-	_menu->m_submenus[3]->m_submenus[3] = createMenuNode("Pokemon", &play_song, 0);
-	*/
-	_menu->m_submenus[3]->m_submenus[0] = createMenuNode(13, NULL, 0);
-	_menu->m_submenus[3]->m_submenus[1] = createMenuNode(14, NULL, 0);
-	_menu->m_submenus[3]->m_submenus[2] = createMenuNode(15, NULL, 0);
-	_menu->m_submenus[3]->m_submenus[3] = createMenuNode(16, NULL, 0);
+	_menu->m_submenus[0]->m_submenus[0] = createMenuNode(2, &playPingPong, 0);
+	_menu->m_submenus[0]->m_submenus[1] = createMenuNode(3, &ping_pong_idle, 0);
+	_menu->m_submenus[1] = createMenuNode(5, NULL, 3);
+	_menu->m_submenus[1]->m_submenus[0] = createMenuNode(8, &calibrateJoystick, 0);
+	_menu->m_submenus[1]->m_submenus[1] = createMenuNode(9, NULL, 2);
+	_menu->m_submenus[1]->m_submenus[1]->m_submenus[0] = createMenuNode(10, NULL, 0);
+	_menu->m_submenus[1]->m_submenus[1]->m_submenus[1] = createMenuNode(11, NULL, 0);
+	_menu->m_submenus[1]->m_submenus[2] = createMenuNode(35, &irSettings, 0);
+	_menu->m_submenus[2] = createMenuNode(12, NULL, 8);
+	_menu->m_submenus[2]->m_submenus[0] = createMenuNode(13, &song_harry_potter, 0);
+	_menu->m_submenus[2]->m_submenus[1] = createMenuNode(14, &song_tetris, 0);
+	_menu->m_submenus[2]->m_submenus[2] = createMenuNode(15, &song_cantina_band, 0);
+	_menu->m_submenus[2]->m_submenus[3] = createMenuNode(16, &song_pokemon, 0);
+	_menu->m_submenus[2]->m_submenus[4] = createMenuNode(17, &song_octaves, 0);
+	_menu->m_submenus[2]->m_submenus[5] = createMenuNode(18, &song_merry_x_mas, 0);
+	_menu->m_submenus[2]->m_submenus[6] = createMenuNode(19, &song_jingle_bells, 0);
+	_menu->m_submenus[2]->m_submenus[7] = createMenuNode(20, &song_last_christmas, 0);
+	_menu->m_submenus[3] = createMenuNode(44, &animations, 0);
+	_menu->m_submenus[4] = createMenuNode(43, &printGreetings, 0);
 	assignParents(_menu);
 	printf("PARENTS ASSIGNED\n");
 }
@@ -125,6 +121,8 @@ MenuNode* menuLevelDown(MenuNode* const node, uint8_t index_of_submenu)
 
 MenuNode* menuLevelUp(MenuNode* const node)
 {
+	if(node <= (MenuNode *) 0x1C00)
+		return node;
 	if(node->m_parent)
 		return node->m_parent;
 	return node;

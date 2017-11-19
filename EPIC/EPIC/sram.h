@@ -16,7 +16,7 @@
 /* initializes SRAM memory by activating external memory and releasing the JTAG pins from memory mapping */
 void sram_init(void);
 
-/* TEST FUNCTIONS for correct SRAM functioning and address decoding*/
+/* TEST FUNCTIONS for correct SRAM functioning and address decoding */
 void TEST_write_adress(void);
 void TEST_SRAM_test(void);
 void TEST_GAL(void);

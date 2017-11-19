@@ -139,7 +139,7 @@ void print_selection(uint8_t page)
 
 void oled_test()
 {
-	while(1)
+	/*while(1)
 	{
 		ones_buffer();
 		print_buffer();
@@ -151,19 +151,24 @@ void oled_test()
 		print_string_to_buffer("hello_world", pos);
 		print_buffer();
 		_delay_ms(2000);
-	}
+	}*/
 }
 
 void printGreetings(void)
 {
-	position pos = { .page = 3, .column = 2 };
-	print_string_to_buffer("I want to greet ", pos);
-	pos.page++;
-	print_string_to_buffer("grandma, because", pos);
-	pos.page++;
-	print_string_to_buffer(" she is soooooooo pretty", pos);
+	clear_buffer();
+	char string[MAX_STRING_LENGTH];
+	position pos = { .page = 1, .column = 2 };
+	for(int i = 0; i < 4; i++)
+	{
+		for (uint8_t i = 0; i < MAX_STRING_LENGTH; i++)
+		string[i] = 0;
+		getStringFromMem(string, 39 + i);
+		print_string_to_buffer(string, pos);
+		pos.page++;
+	}	
 	print_buffer();
-	_delay_ms(1000);
+	_delay_ms(4000);
 }
 
 void print_thumb(void)
@@ -175,11 +180,12 @@ void print_thumb(void)
 	{
 		for (uint8_t i = 0; i < MAX_STRING_LENGTH; i++)
 			string[i] = 0;
-		getStringFromMem(string, 17 + i);
+		getStringFromMem(string, 21 + i);
 		print_string_to_buffer(string, pos);
 		pos.page++;
 	}
 	print_buffer();
+	_delay_ms(2000);
 }
 
 void printMenu(MenuNode* menu_entries)
@@ -187,28 +193,17 @@ void printMenu(MenuNode* menu_entries)
 	char string[MAX_STRING_LENGTH];
 	
 	clear_buffer();
-	if(menu_entries)
+	
+	for(int i = 0; i < menu_entries->m_num_submenus; i++)
 	{
-		for(int i = 0; i < menu_entries->m_num_submenus; i++)
-		{
-			if(menu_entries->m_submenus)
-			{
-				//TODO check if num submenus < 8
-				position pos = { .page = i, .column = 2 }; //printf(menu_entries->m_submenus[i]->m_content.title); printf("\n");
-				for (uint8_t i = 0; i < MAX_STRING_LENGTH; i++)
-					string[i] = 0;
-				getStringFromMem(string, menu_entries->m_submenus[i]->m_content.title_id);
-				print_string_to_buffer(string, pos);
-			}
-			else
-				printf("NULL submenu\n");
-		}
-		print_buffer();
+		//TODO check if num submenus < 8
+		position pos = { .page = i, .column = 2 };
+		for (uint8_t i = 0; i < MAX_STRING_LENGTH; i++)
+			string[i] = 0;
+		getStringFromMem(string, menu_entries->m_submenus[i]->m_content.title_id);
+		print_string_to_buffer(string, pos);
 	}
-	else
-	{
-		printf("empty menu pointer detected\n");
-	}
+	print_buffer();
 }
 
 void sayHello(void)
@@ -220,7 +215,7 @@ void sayHello(void)
 	{
 		for (uint8_t i = 0; i < MAX_STRING_LENGTH; i++)
 			string[i] = 0;
-		getStringFromMem(string, 24 + i);
+		getStringFromMem(string, 28 + i);
 		print_string_to_buffer(string, pos);
 		pos.page++;
 	}

@@ -23,7 +23,7 @@ uint8_t global_motor_speed;
 void motor_init(void)
 {
 	enableMotor();
-	PID_timer_init ();
+	PID_timer_init();
 }
 
 void PID_timer_init(void)
@@ -33,12 +33,21 @@ void PID_timer_init(void)
 
 	TCCR0B &= ~(1 << WGM02);
 
-	//clock prescaler to 64  around 1 ms
+	//clock prescaler to 1024  around 16 ms
 	TCCR0B &= ~(1 << CS01);
 	TCCR0B |= (1 << CS02) | (1 << CS00);
+}
 
+void motor_timer_on(void)
+{
 	//enable interrupt for counter overflow
 	TIMSK0 |= (1 << TOIE0);
+}
+
+void motor_timer_off(void)
+{
+	//disable interrupt for counter overflow
+	TIMSK0 &= ~(1 << TOIE0);
 }
 
 void setMotorSpeed(void)
@@ -166,7 +175,6 @@ void shoot_init(void)
 
 void PIMotorController(void)
 {
-	static int count = 0;
 	if(global_current_direction == NEUTRAL || global_current_direction == UP || global_current_direction == DOWN)
 	{
 		unsigned char msg[3] = {0x50, 0x0, 0};
@@ -184,8 +192,6 @@ void PIMotorController(void)
 		esum += e;
 	
 	int8_t new_val = (Kp * e + Ki * T * esum);
-	//if(count++ % 7 == 0)
-		//printf("new_val: %d\n",abs(new_val));
 
 	global_motor_speed = abs(new_val);
 	

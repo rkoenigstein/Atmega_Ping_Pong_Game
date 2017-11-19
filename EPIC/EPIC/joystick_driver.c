@@ -31,7 +31,8 @@ void USB_init()
 
 bool JOY_button(int button)
 {
-	return PINB & (1 << button);
+	//printf("%x", ~(PINB & (1 << button)));
+	return  (PINB & (1 << button));
 }
 
 void calibrateLeftSlider(void)
@@ -308,14 +309,14 @@ JOY_POS JOY_getPosition(void)
 		x[i] = ADC_read(JOY_H);
 		_delay_us(10);
 	}
-	real.x = data_fit(x, 15, 2, 2, 4);
+	real.x = data_fit(x, 15, 2, 2, 5);
 	
 	for(i = 0; i < 15; i++)
 	{
 		x[i] = ADC_read(JOY_V);
 		_delay_us(10);
 	}
-	real.y = data_fit(x, 15, 2, 2, 4);
+	real.y = data_fit(x, 15, 2, 2, 5);
 	
 	if(real.y >= -real.x + 255 && real.y >= real.x)
 	{
@@ -394,7 +395,7 @@ uint8_t Y_getDirection(JOY_POS in)
 
 void TEST_USB_BOARD(void)
 {
-	JOY_POS value;
+	/*JOY_POS value;
 	SLID slid;
 	while(1)
 	{
@@ -403,5 +404,5 @@ void TEST_USB_BOARD(void)
 		slid = SLID_getPosition();
 		printf("Slider Position: left=%d , right=%d\n",  slid.l,  slid.r);
 		_delay_ms(500);
-	}
+	}*/
 }

@@ -17,13 +17,29 @@
 #include "motor_control.h"
 #include "servo_driver.h"
 #include "TWI_Master.h"
-//#include "music.h"
+#include "music.h"
 #include <stdbool.h>
 #include <avr/sleep.h>
+
+can_message can_msg;
+JOY_POS current_joy_pos, old_joy_pos;
+uint8_t current_right_slid, old_right_slid;
+bool right_button = false;
+bool play_music = false;
+bool in_game = false;
 
 int cur_top = BOTTOM + (TOP-BOTTOM)/2;
 
 int score = 0;
+
+bool with_ir = false;
+
+void sleep_init (void)
+{
+	//select Power-down mode
+	SMCR |= (1 << SM1);
+	SMCR &= ~(1 << SM0) & ~(1 << SM2);
+}
 
 void main_init (void)
 {
@@ -36,24 +52,34 @@ void main_init (void)
 	TWI_Master_Initialise();
 	sei();
 	motor_init();
-	//music_init();
+	music_init();
 	printf("INIT DONE\n");
 }
 
-void go_to_sleep(bool power_down)
+//interrupt service routine for timer of IR sensor updating the score
+void updateScore(void)
 {
-	//select Power-down mode
-	if(power_down)
+	int val = 0;
+	for(uint8_t i = 0; i < 10; i++)
 	{
-		SMCR |= (1 << SM1);
-		SMCR &= ~(1 << SM0) & ~(1 << SM2);
+		val += getIRValue();
 	}
-	else
-	{
-		SMCR |= (1 << SM0) | (1 << SM1);
-		SMCR &= ~(1 << SM2);
-	}
+	val /= 10;
+	printf("IR value=%d\n", val);
+
 	
+	if(val < 8)
+	{
+		score++;
+		can_message can_msg = { .id = SCORE, .length = 1, .data[0] = score };
+		can_message_send(can_msg);
+		printf("CAN send score IR value=%d\n", val);
+		_delay_ms(2000);
+	}
+}
+
+void go_to_sleep (void)
+{
 	// set SE to one
 	SMCR |= (1 << SE);
 
@@ -69,68 +95,63 @@ void go_to_sleep(bool power_down)
 
 void update_OCR(uint8_t servo_pos)
 {
-	//DDRE |= (1 << PE3);
 	OCR3A = (uint8_t) calculateDutyCycle(servo_pos);
-}
-
-void updateScore(void)
-{
-	int val=0;
-	bool flag = false;
-	for(uint8_t i=0; i<10;i++)
-	{
-		val = getIRValue();
-		flag = val > 2 ? true : false;
-	}
-	if(!flag)
-	{
-		score++;
-		while (getIRValue()< 3);
-		_delay_ms(1000);
-	}
 }
 
 int main(void)
  {
 
 	main_init();
-	go_to_sleep(POWER_DOWN);
-
-	/*while(1)
-	{
-		play_song(1);
-	}*/
 	
-		//printf("hey\n");
-		//printf("IR value: %d\n", getIRValue());
-		//updateScore();
-		//printf("The score is %d\n", score);
-
-	//TEST_music();
-	//test_shoot();
-}
-
-
-void test_shoot(void)
-{
-	int i=0;
 	while(1)
 	{
-		shoot();
-		printf("Attempt %d\n", i);
-		i++;
-		_delay_ms(2000);
-	}
+		_delay_ms(15);
+
+		//update playing song if new CAN SONG message arrived
+		if(play_music)
+			play_song();
+			
+		_delay_ms(15);
+		
+		//update servo if new CAN SLID message arrived
+		if(current_right_slid != old_right_slid)
+		{
+			old_right_slid = current_right_slid;
+			update_OCR(current_right_slid);
+		}
+		
+		_delay_ms(15);
+		
+		//update shoot if new CAN BUTTON message arrived
+		if(right_button)
+		{
+			shoot();
+			right_button = false;
+		}
+		
+		_delay_ms(15);
+		
+		//update joystick position if new CAN JOY message arrived
+		if(current_joy_pos.dir != old_joy_pos.dir || old_joy_pos.x != current_joy_pos.x || old_joy_pos.y != current_joy_pos.y)
+		{
+			//printf("old joy x: %d, y: %d, dir: %d, current x: %d, y: %d, dir: %d \n", old_joy_pos.x, old_joy_pos.y, old_joy_pos.dir, current_joy_pos.x, current_joy_pos.y, current_joy_pos.dir);
+			old_joy_pos = current_joy_pos;
+			setMotorPosition(current_joy_pos);
+		}
+		
+		_delay_ms(15);
+		
+		//update score by means of checking IR value
+		if(in_game && with_ir)
+			updateScore();
+    }
 }
 
+//interrupt service routine clearing the receive buffer interrupt bit to receive next message
 ISR(INT3_vect)
 {
-	//clear interrupt bits for rx buffer 0
-	mcp_write(MCP_CANINTF, MCP_RX0IF & 0x00);
-	
-	//handle CAN message
 	can_message can_msg;
-	
+
 	//read upper 8 bit of id
 	can_msg.id = mcp_read(MCP_RXB0SIDH) << 3;
 	
@@ -144,19 +165,27 @@ ISR(INT3_vect)
 	for(uint8_t i = 0; i < can_msg.length; i++)
 	can_msg.data[i] = mcp_read(MCP_RXB0D0+i);
 	
-	//allow new message to be received into the buffer
-	mcp_write(MCP_CANINTF, MCP_RX0IF & 0x00);
-	
-	handleCANmessage(can_msg);
-}
-
-void handleCANmessage(can_message can_msg)
-{
-	static JOY_POS current_joy_pos;
-	static SLID current_slider;
-	
 	switch(can_msg.id)
 	{
+		case START_PING_PONG:
+		{
+			printf("START PING PONG \n");
+			//play = true;
+			//setPlaying(true, TETRIS);
+			in_game = true;
+			score = 0;
+			motor_timer_on();
+			break;
+		}
+		case STOP_PING_PONG:
+		{
+			printf("STOP PING PONG \n");
+			//setPlaying(false, 0);
+			//play = false;
+			in_game = true;
+			motor_timer_off();
+			break;
+		}
 		case JOY:
 		{
 			printf("Got Joy pos \n");
@@ -168,26 +197,18 @@ void handleCANmessage(can_message can_msg)
 			current_joy_pos.x = can_msg.data[R];
 			current_joy_pos.y = can_msg.data[L];
 			current_joy_pos.dir = can_msg.data[DIR];
-			printf("JOY x: %d, JOY y: %d, JOY dir: %d\n", current_joy_pos.x, current_joy_pos.y, current_joy_pos.dir);
-			setMotorPosition(current_joy_pos);
+			//printf("JOY x: %d, JOY y: %d, JOY dir: %d\n", current_joy_pos.x, current_joy_pos.y, current_joy_pos.dir);
 			break;
 		}
 		case BUTTONS:
 		{
-			uint8_t button = can_msg.data[0];
-			printf("Got button: %d\n", button);
+			right_button = R == can_msg.data[0];
+			printf("Got button\n");
 			if(can_msg.length != 1)
 			{
 				printf("ERROR IN CAN MSG, WRONG LENGTH FOR BUTTONS\n");
 				break;
 			}
-			if (button == R)
-			{
-				shoot();
-				printf("Right button SHOOT\n");
-			}
-			if (button == L)
-			printf("Left button Press the other button\n");
 			break;
 		}
 		case SLIDERS:
@@ -198,31 +219,55 @@ void handleCANmessage(can_message can_msg)
 				printf("ERROR IN CAN MSG, WRONG LENGTH FOR SLIDERS\n");
 				break;
 			}
-			current_slider.r = can_msg.data[R];
-			current_slider.l = can_msg.data[L];
+			current_right_slid = can_msg.data[R];
 			//printf("right slider: %d, left slider: %d\n", current_slider.r, current_slider.l);
-			update_OCR(current_slider.r);
 			break;
 		}
-		case CAN_SLEEP:
+		case WITH_IR:
 		{
-			printf("Go to sleep, send me a CAN message so that I will wake up\n");
-			go_to_sleep(POWER_DOWN);
-			printf("Woke up\n");
+			printf("WITH IR CAN RECEIVED\n");
+			with_ir = true;	
+			break;		
+		}
+		case WITHOUT_IR:
+		{
+			printf("WITHOUT IR CAN RECEIVED\n");
+			with_ir = false;
 			break;
 		}
-		case PLAY_SONG:
+		case START_SONG:
 		{
-			go_to_sleep(POWER_SAVE);
+			play_music = true;
 			printf("Playing music\n");
-			//play_song(can_msg.data[0]);
+			setPlaying(true, can_msg.data[0]);
+			break;
+		}
+		case END_SONG:
+		{
+			setPlaying(false, 0);
+			printf("Stopping music\n");
+			play_music = false;
 			break;
 		}
 		default:
 		{
 			printf("CAN ID unknown\n");
-			go_to_sleep(POWER_DOWN);
 			break;
 		}
+	}
+	
+	//allow new message to be received into the buffer
+	mcp_write(MCP_CANINTF, MCP_RX0IF & 0x00);
+}
+
+void test_shoot(void)
+{
+	int i=0;
+	while(1)
+	{
+		shoot();
+		printf("Attempt %d\n", i);
+		i++;
+		_delay_ms(2000);
 	}
 }

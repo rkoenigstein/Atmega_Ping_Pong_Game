@@ -6,70 +6,72 @@
 
 #define pause 0.00
 
-#define C 0
-#define Cs 1
-#define D 2
-#define Ds 3
-#define E 4
-#define F 5
-#define Fs 6
-#define G 7
-#define Gs 8
-#define A 9
-#define As 10
-#define B 11
+#define whole 4.0
+#define half 2.0
+#define quarter 1.0
+#define octal 0.5
+#define sixteenth 0.25
+#define zero 0.0
 
-#define whole 1.0
-#define half 0.5
-#define quarter 0.25
-#define octal 0.125
-#define sixteenth 0.0625
+#define NUM_OF_SONGS 8
 
-#define NUM_OF_SONGS 4
-/*
-const float PROGMEM pause = 0.00;
+#define SONG_SIZE 134
 
-const uint8_t PROGMEM C = 0;
-const uint8_t PROGMEM Cs = 1;
-const uint8_t PROGMEM D = 2;
-const uint8_t PROGMEM Ds = 3;
-const uint8_t PROGMEM E = 4;
-const uint8_t PROGMEM F = 5;
-const uint8_t PROGMEM Fs = 6;
-const uint8_t PROGMEM G = 7;
-const uint8_t PROGMEM Gs = 8;
-const uint8_t PROGMEM A = 9;
-const uint8_t PROGMEM As = 10;
-const uint8_t PROGMEM B = 11;
-
-const float PROGMEM whole = 1.0;
-const float PROGMEM half = 0.5;
-const float PROGMEM quarter = 0.25;
-const float PROGMEM octal = 0.125;
-const float PROGMEM sixteenth = 0.0625;
-
-const uint8_t PROGMEM NUM_OF_SONGS = 4;
-*/
 #define point_note(x) ((x) * 1.5)
 #define connected_note(x, y) ((x) + (y))
 
 //music frequencies of notes according to http://www.phy.mtu.edu/~suits/notefreqs.html
-//octaves 0 to 8, C, Cs, D, Ds, E, F, Fs, G, Gs, A, As, B
-const float PROGMEM notes[9][12] =
-{
-  {16.35, 17.32, 18.35, 19.45, 20.60, 21.83, 23.12, 24.50, 25.96, 27.50, 29.14, 30.87}, //0
-  {32.70, 34.65, 36.71, 38.89, 41.20, 43.65, 46.25, 49.00, 51.91, 55.00, 58.27, 61.74}, //1
-  {65.41, 69.30, 73.42, 77.78, 82.41, 78.31, 92.50, 98.00, 103.83, 110.00, 116.54, 123.47}, //2
-  {130.81, 138.59, 146.83, 155.56, 164.81, 174.61, 185.00, 196.00, 207.65, 220.00, 233.08, 246.94}, //3
-  {261.63, 277.18, 293.66, 311.13, 329.63, 349.23, 369.99, 392.00, 415.30, 440.00, 466.16, 493.88}, //4
-  {523.25, 554.37, 587.33, 622.25, 659.25, 698.46, 739.99, 783.99, 830.61, 880.00, 932.33, 987.77}, //5
-  {1046.50, 1108.73, 1174.66, 1244.51, 1318.51, 1396.91, 1479.98, 1567.98, 1661.22, 1760.00, 1864.66, 1975.53}, //6
-  {2093.00, 2217.46, 2349.32, 2489.02, 2637.02, 2793.83, 2959.96, 3135.96, 3322.44, 3520.00, 3729.31, 3951.07}, //7
-  {4186.01, 4434.92, 4698.63, 4978.03, 5274.04, 5587.65, 5919.91, 6271.93, 6644.88, 7040.00, 7458.62, 7902.13}, //8
-};
+#define C1	32.70
+#define Cs1	34.65
+#define D1	36.71
+#define Ds1	38.89
+#define E1	41.20
+#define F1  43.65
+#define Fs1	46.25
+#define G1	49.00
+#define	Gs1	51.91
+#define A1	55.00
+#define As1	58.27
+#define H1	61.74
+#define C2	65.41
+#define Cs2	69.30 
+#define D2	73.42 
+#define Ds2	77.78 
+#define E2	82.41 
+#define F2	78.31 
+#define Fs2	92.50 
+#define G2	98.00 
+#define	Gs2	103.83 
+#define A2	110.00 
+#define As2	116.54 
+#define H2	123.47
+#define C3	130.81 
+#define Cs3	138.59 
+#define D3	146.83 
+#define Ds3	155.56 
+#define E3	164.81 
+#define F3	174.61 
+#define Fs3	185.00 
+#define G3	196.00 
+#define	Gs3	207.65 
+#define A3	220.00 
+#define As3	233.08 
+#define H3	246.94
+#define C4	261.63
+#define Cs4	277.18 
+#define D4	293.66
+#define Ds4	311.13 
+#define E4	329.63 
+#define F4	349.23 
+#define Fs4	369.99 
+#define G4	392.00 
+#define	Gs4	415.30 
+#define A4	440.00 
+#define As4	466.16 
+#define H4	493.88
 
 //songs available to be played
-const float PROGMEM songs_durations[NUM_OF_SONGS][61] =
+const float songs_durations[NUM_OF_SONGS][SONG_SIZE] PROGMEM =
 {
   {
     quarter, point_note(quarter), octal, quarter, half, quarter, point_note(half), point_note(half),
@@ -77,67 +79,245 @@ const float PROGMEM songs_durations[NUM_OF_SONGS][61] =
     quarter, point_note(quarter), octal, quarter, half, quarter, half, quarter, half, quarter, point_note(quarter),
     octal, quarter, half, quarter, connected_note(point_note(half), half), quarter, half, quarter, half, quarter, half, quarter, half,
     quarter, point_note(quarter), octal, quarter, half, quarter, connected_note(point_note(half), half), quarter,
-    half, quarter, half, quarter, half, quarter, half, quarter, point_note(quarter), octal, quarter, half, quarter, connected_note(point_note(half), half), quarter
+    half, quarter, half, quarter, half, quarter, half, quarter, point_note(quarter), octal, quarter, half, quarter, connected_note(point_note(half), half), 
+	quarter, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero
   }, //harry potter - hedwig
   {
     quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, point_note(quarter), octal, quarter, quarter, quarter, quarter,
     octal, octal, octal, point_note(quarter), octal, quarter, octal, octal, point_note(quarter), octal, quarter, octal, octal, quarter, octal, octal, quarter,
     quarter, quarter, quarter, quarter, quarter, half, half, half, half, half, half, half, quarter, quarter, half, half, half, half, quarter, quarter, half, half,
-    quarter, octal, octal
+    quarter, octal, octal, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero
   }, //Tetris
   {
     quarter, quarter, quarter, quarter, octal, quarter, octal, octal, octal, quarter, octal, octal, octal, octal, octal, octal, octal, octal, point_note(quarter), connected_note(octal, half),
     quarter, quarter, quarter, quarter, octal, quarter, octal, octal, octal, quarter, octal, quarter, connected_note(octal, octal), octal, quarter, octal, quarter, connected_note(octal, octal), point_note(quarter),
-    quarter, quarter, quarter, quarter, octal, quarter, octal, octal, octal, quarter, octal, quarter, connected_note(octal, octal), octal, quarter, point_note(quarter), connected_note(octal, half)
+    quarter, quarter, quarter, quarter, octal, quarter, octal, octal, octal, quarter, octal, quarter, connected_note(octal, octal), octal, quarter, point_note(quarter), 
+	connected_note(octal, half), zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero
   }, //Cantina band
   {
     octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, half, half,
     octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, half, half,
-    octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, half, quarter, quarter
-  } //Pokemon Theme*/
+    octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, octal, octal, quarter, half, quarter, 
+	quarter, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+	zero, zero
+  }, //Pokemon Theme
+	/*{
+		quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, 
+		quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, 
+		quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, 
+		quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter,
+		quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, quarter, 
+		quarter, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, 
+		zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+		zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+		zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+		zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+		zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+		zero, zero
+	},*/ //Octaves
+	{
+		quarter, quarter, quarter, point_note(octal), sixteenth, quarter, point_note(octal), sixteenth,
+		half, quarter, quarter, quarter, point_note(octal), sixteenth, quarter, point_note(octal),
+		sixteenth, half, quarter, point_note(octal), sixteenth, quarter, point_note(octal), sixteenth,
+		sixteenth, sixteenth, octal, octal, octal, quarter, point_note(octal), sixteenth,
+		sixteenth, sixteenth, octal, octal, octal, quarter, point_note(octal), sixteenth,
+		quarter, point_note(octal), sixteenth, half, quarter, point_note(octal), sixteenth, quarter,
+		point_note(octal), sixteenth, sixteenth, sixteenth, octal, octal, octal, quarter,
+		point_note(octal), sixteenth, sixteenth, sixteenth, octal, octal, octal, quarter,
+		point_note(octal), sixteenth, quarter, point_note(octal), sixteenth, half, zero, zero, 
+		zero, zero, zero, zero, zero, zero, zero, zero, 
+		zero, zero, zero, zero, zero, zero, zero, zero, 
+		zero, zero, zero, zero, zero, zero, zero, zero,
+		zero, zero, zero, zero, zero, zero, zero, zero, 
+		zero, zero, zero, zero, zero
+	}, //Imperial March
+	{
+		quarter, quarter, octal, octal, octal, octal, quarter, quarter, quarter, quarter, octal, octal, 
+		octal, octal, quarter, quarter, quarter, quarter, octal, octal, octal, octal, quarter, quarter, 
+		octal, octal, quarter, quarter, quarter, half, quarter, quarter, quarter, quarter, half, quarter, 
+		quarter, quarter, quarter, half, quarter, quarter, quarter, quarter, quarter, quarter, octal, octal, 
+		quarter, quarter, quarter, half, quarter, quarter, octal, octal, octal, octal, quarter, quarter, 
+		quarter, quarter, octal, octal, octal, octal, quarter, quarter, quarter, quarter, octal, octal, 
+		octal, octal, quarter, quarter, octal, octal, quarter, quarter, quarter, half, zero, zero,
+		zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+		zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+		zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+		zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero,
+		zero, zero
+	}, //Merry Christmas
+	{
+		octal, octal, octal, octal, quarter, octal, octal, octal, octal, octal, octal, quarter, 
+		octal, octal, octal, octal, octal, octal, quarter, octal, octal, octal, octal, octal, 
+		octal, quarter, octal, octal, octal, octal, octal, octal, quarter, octal, octal, octal, 
+		octal, octal, octal, quarter, octal, octal, octal, octal, octal, octal, octal, octal, 
+		octal, octal, octal, octal, octal, octal, point_note(quarter), octal, octal, octal, quarter, octal,
+		octal, quarter, octal, octal, point_note(octal), sixteenth, point_note(quarter), octal, octal, octal, point_note(octal), sixteenth, 
+		octal, octal, octal, sixteenth, sixteenth, octal, octal, octal, octal, quarter, quarter, octal, 
+		octal, quarter, octal, octal, quarter, octal, octal, point_note(octal), sixteenth, point_note(quarter), pause, octal,
+		octal, point_note(octal), sixteenth, octal, octal, octal, sixteenth, sixteenth, octal, octal, octal, octal, 
+		point_note(quarter), zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, 
+		zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, zero, 
+		zero, zero
+	}, //Jingle Bells
+	{
+		point_note(quarter), connected_note(octal, octal), quarter, octal, octal, octal, octal, connected_note(octal, quarter),
+		octal, octal, octal, octal, quarter, point_note(quarter), octal, octal, octal, octal, connected_note(octal, quarter), quarter,
+		point_note(quarter), connected_note(octal, point_note(quarter)), octal, octal, octal, octal, connected_note(octal, quarter), octal, octal, octal, octal, connected_note(octal, octal),
+		quarter, connected_note(octal, octal), point_note(quarter), half, point_note(quarter), connected_note(octal, octal), quarter, octal, octal, octal, octal, connected_note(octal, quarter),
+		octal, octal, octal, octal, quarter, point_note(quarter), octal, octal, octal, octal, connected_note(octal, quarter), quarter, 
+		point_note(quarter), connected_note(octal, point_note(quarter)), octal, octal, octal, octal, connected_note(octal, quarter), octal, octal, octal, octal, octal, 
+		connected_note(octal, octal), quarter, connected_note(octal, octal), point_note(quarter), half, half, point_note(quarter), connected_note(octal, half), octal, octal, octal, octal, 
+		quarter, quarter, connected_note(half, half), octal, octal, octal, octal, connected_note(whole, half), octal, octal, octal, octal, 
+		whole, half, octal, octal, quarter, quarter, quarter, octal, octal, octal, octal, point_note(quarter), 
+		connected_note(octal, sixteenth), sixteenth, connected_note(octal, quarter), octal, octal, octal, octal, octal, octal, octal, octal, octal, 
+		octal, octal, connected_note(octal, octal), quarter, connected_note(octal, quarter), octal, sixteenth, connected_note(sixteenth, octal), octal, quarter, octal, octal, 
+		octal, sixteenth, connected_note(sixteenth, octal), octal, quarter
+	} //Last Christmas
 };
 
 //songs available to be played
-const float songs_frequencies[1][61] =
+const float songs_frequencies[NUM_OF_SONGS][SONG_SIZE] PROGMEM =
 {
 	{
-		123.47, 164.81, 196.00, 185.00, 164.81, 246.94, 220.00, 185.00, 164.81, 196.00, 185.00, 155.56,
-		123.47, 164.81, 196.00, 185.00, 164.81, 246.94, 220.00, 185.00, 164.81, 196.00, 185.00, 155.56,
-		123.47, 164.81, 196.00, 185.00, 164.81, 246.94, 220.00, 185.00, 164.81, 196.00, 185.00, 155.56,
-		123.47, 164.81, 196.00, 185.00, 164.81, 246.94, 220.00, 185.00, 164.81, 196.00, 185.00, 155.56,
-		123.47, 164.81, 196.00, 185.00, 164.81, 246.94, 220.00, 185.00, 164.81, 196.00, 185.00, 155.56
-	}/*
-	{
-		notes[2][B], notes[3][E], notes[3][G], notes[3][Fs], notes[3][E], notes[3][B], notes[3][A], notes[3][Fs], notes[3][E], notes[3][G], notes[3][Fs], notes[3][Ds],
-		notes[3][F], notes[2][B], notes[2][B], notes[3][E], notes[3][G], notes[3][Fs], notes[3][E], notes[3][B], notes[4][D], notes[4][Cs], notes[4][C], notes[3][Gs],
-		notes[4][C], notes[3][B], notes[3][As], notes[2][As], notes[3][G], notes[3][E], notes[3][G], notes[3][B], notes[3][G], notes[3][B], notes[3][G], notes[4][D],
-		notes[4][Cs], notes[4][C], notes[3][Gs], notes[3][G], notes[3][B], notes[3][As], notes[2][As], notes[2][B], notes[3][B], notes[3][G], notes[3][B], notes[3][G],
-		notes[3][B], notes[3][G], notes[4][C], notes[3][B], notes[3][As], notes[3][Fs], notes[4][C], notes[3][B], notes[3][As], notes[2][As], notes[3][G], notes[3][E], pause
+		H2, E3, G3, Fs3, E3, H3, A3, Fs3, E3, G3, Fs3, Ds3,
+		F3, H2, H2, E3, G3, Fs3, E3, H3, D4, Cs4, C4, Gs3,
+		C4, H3, As3, As2, G3, E3, G3, H3, G3, H3, G3, D4,
+		Cs4, C4, Gs3, G3, H3, As3, As2, H2, H3, G3, H3, G3,
+		H3, G3, C4, H3, As3, Fs3, C4, H3, As3, As2, G3, E3, 
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, 
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, 
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause
 	}, //harry potter - hedwig
 	{
-		notes[3][E], notes[2][B], notes[3][C], notes[3][D], notes[3][C], notes[2][B], notes[2][A], notes[2][A], notes[3][C], notes[3][E], notes[3][D], notes[3][C],
-		notes[2][B], notes[3][C], notes[3][D], notes[3][E], notes[3][C], notes[2][A], notes[2][A], notes[2][A], notes[2][B], notes[3][C], notes[3][D], notes[3][F],
-		notes[3][A], notes[3][G], notes[3][F], notes[3][E], notes[3][C], notes[3][E], notes[3][D], notes[3][C], notes[2][B], notes[2][B], notes[3][C], notes[3][D],
-		notes[3][E], notes[3][C], notes[2][A], notes[2][A], pause, notes[3][E], notes[3][C], notes[3][D], notes[2][B], notes[3][C], notes[2][A], notes[2][Gs],
-		notes[2][B], pause, notes[3][E], notes[3][C], notes[3][D], notes[2][B], notes[3][C], notes[3][E], notes[3][A], notes[3][Gs], pause, pause, pause
+		E3, H2, C3, D3, C3, H2, A2, A2, C3, E3, D3, C3,
+		H2, C3, D3, E3, C3, A2, A2, A2, H2, C3, D3, F3,
+		A3, G3, F3, E3, C3, E3, D3, C3, H2, H2, C3, D3,
+		E3, C3, A2, A2, pause, E3, C3, D3, H2, C3, A2, Gs2,
+		H2, pause, E3, C3, D3, H2, C3, E3, A3, Gs3, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause
 	}, //Tetris
 	{
-		notes[3][E], notes[3][A], notes[3][E], notes[3][A], notes[3][E], notes[3][A], notes[3][E], pause, notes[3][Ds], notes[3][E], notes[3][E],
-		notes[3][Ds], notes[3][E], notes[3][D], pause, notes[3][Cs], notes[3][D], notes[3][Cs], notes[3][C], notes[2][A], notes[3][E], notes[3][A],
-		notes[3][E], notes[3][A], notes[3][E], notes[3][A], notes[3][E], pause, notes[3][Ds], notes[3][E], notes[3][D], pause, notes[3][D],
-		notes[3][Cs], notes[3][D], notes[3][G], notes[3][F], notes[3][E], notes[3][D], notes[3][E], notes[3][A], notes[3][E], notes[3][A], notes[3][E],
-		notes[3][A], notes[3][E], pause, notes[3][Ds], notes[3][E], notes[3][G], pause, notes[3][G], notes[3][E], notes[3][D], notes[3][C], notes[2][A]
+		E3, A3, E3, A3, E3, A3, E3, pause, Ds3, E3, E3,
+		Ds3, E3, D3, pause, Cs3, D3, Cs3, C3, A2, E3, A3,
+		E3, A3, E3, A3, E3, pause, Ds3, E3, D3, pause, D3,
+		Cs3, D3, G3, F3, E3, D3, E3, A3, E3, A3, E3,
+		A3, E3, pause, Ds3, E3, G3, pause, G3, E3, D3, C3, A2,
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause
 	}, //Cantina band
 	{
-		notes[2][D], notes[2][D], notes[2][A], notes[2][D], notes[2][D], notes[2][As], notes[2][D], notes[2][D], notes[2][A], notes[2][D], notes[2][D], notes[2][Cs],
-		notes[2][D], notes[2][D], notes[2][A], notes[2][D], notes[2][D], notes[3][Cs], notes[3][D], pause, notes[2][D], notes[2][D], notes[2][A], notes[2][D],
-		notes[2][D], notes[2][As], notes[2][D], notes[2][D], notes[2][A], notes[2][D], notes[2][D], notes[2][Cs], notes[2][D], notes[2][D], notes[2][A], notes[2][D],
-		notes[2][D], notes[3][Cs], notes[3][D], pause, notes[2][D], notes[2][D], notes[2][A], notes[2][D], notes[2][D], notes[2][As], notes[2][D], notes[2][D],
-		notes[2][A], notes[2][D], notes[2][D], notes[2][Cs], notes[2][D], notes[2][D], notes[2][A], notes[2][D], notes[2][D], notes[3][Cs], notes[3][D], pause, pause
-	} //Pokemon Theme*/
+		D3, D3, A3, D3, D3, As3, D3, D3, A3, D3, D3, Cs3,
+		D3, D3, A3, D3, D3, Cs4, D4, pause, D3, D3, A3, D3,
+		D3, As3, D3, D3, A3, D3, D3, Cs3, D3, D3, A3, D3,
+		D3, Cs4, D4, pause, D3, D3, A3, D3, D3, As3, D3, D3,
+		A3, D3, D3, Cs3, D3, D3, A3, D3, D3, Cs4, D4, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause
+	}, //Pokemon Theme
+	/*{
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, C2,	pause, D2, 
+		pause, E2, pause, F2, pause, G2, pause, A2, pause, H2, pause, C3,	
+		pause, D3, pause, E3, pause, F3, pause, G3, pause, A3, pause, H3, 
+		pause, C4,	pause, D4, pause, E4, pause, F4, pause, G4, pause, A4, 
+		pause, H4, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, 
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause
+	}, //Octaves*/
+	{
+		G3, G3, G3, E3, H3, G3, E3, H3,
+		G3, D4, D4, D4, E4, H3, Fs3, E3,
+		H3, G3, G4, G3, G3, G4, Fs4, F4,
+		E4, Ds4, E4, pause, Gs3, Cs4, C4, H3, As3,
+		A3, As3, pause, E3, Fs3, E3, G3,
+		H3, G3, H3, D4, G4, G3, G3, G4,
+		Fs4, F4, E4, Ds4, E4, pause, Gs3, Cs4,
+		C4, H3, As3, A3, As3, pause, E3, Fs3,
+		E3, H3, G3, E3, H3, G3, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause,
+		pause, pause, pause, pause, pause
+	}, //Imperial
+	{
+		D3, G3, G3, A3, G3, Fs3, E3, E3, E3, A3, A3, H3, 
+		A3, G3, Fs3, D3, D3, H3, H3, C4, H3, A3, G3, E3, 
+		D3, D3, E3, A3, Fs3, G3, D3, G3, G3, G3, Fs3, Fs3,
+		G3, Fs3, E3, D3, A3, H3, A3, G3, D4, D3, D3, D3, 
+		E3, A3, Fs3, G3, D3, G3, G3, A3, G3, Fs3, E3, E3, 
+		E3, A3, A3, H3, A3, G3, Fs3, D3, D3, H3, H3, C4, 
+		H3, A3, G3, E3, D3, D3, E3, A3, E3, Fs3, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause, pause,
+		pause  		
+	}, //Merry Christmas
+	{
+		D3, H3, A3, G3, D3, pause, D3, D3, H3, A3, G3, E3, 
+		pause, E3, E3, C4, H3, A3, Fs3, pause, Fs3, D4, D4, C4, 
+		A3, H3, pause, D3, D3, H3, A3, G3, D3, pause, D3, D3, 
+		H3, A3, G3, E3, pause, E3, E3, C4, H3, A3, D4, D4, 
+		D4, D4, E4, D4, C4, A3, G3, pause, H3, H3, H3, H3, 
+		H3, H3, H3, D4, G3, A3, H3, pause, C4, C4, C4, C4, 
+		C4, H3, H3, H3, H3, H3, A3, A3, H3, A3, D3, H3,
+		H3, H3, H3, H3, H3, H3, D4, G3, A3, H3, pause, C4, 
+		C4, C4, C4, C4, H3, H3, H3, H3, D4, D4, C4, A3, 
+		G3		
+	}, //Jingle Bells
+	{
+		A3, A3, G3, D3, A3, A3, H3, G3, E3, G3, A3, A3, 
+		H3, G3, E3, Fs3, G3, Fs3, E3, pause, H3, A3, E3, H3,
+		C4, H3, A3, pause, G3, Fs3, G3, G3, Fs3, G3, Fs3, D3, 
+		pause, A3, A3, G3, D3, A3, A3, H3, A3, E3, G3, A3, 
+		A3, H3, A3, E3, Fs3, G3, Fs3, E3, pause, H3, A3, E3, 
+		H3,	C4, H3, A3, pause, G3, Fs3, G3, G3, Fs3, G3, Fs3, 
+		D3, pause, D3, D4, D3, D3, E3, Fs3, G3, A3, G3, E3, 
+		D4, H3, G3, E3, C3, E4, C4, A3, Fs3, D3, D4, C4, 
+		H3, A3, pause, A3, A3, G3, pause, G3, D4, H3, A3, G3, 
+		pause, A3, A3, A3, A3, G3, pause, G3, E4, E4, pause, H3, 
+		H3, A3, G3, H3, E3, G3, A3, pause, H3, H3, H3, E3, 
+		G3, A3
+	} //Last Christmas
 };
 
 //speed of songs
-const uint8_t PROGMEM song_speed[NUM_OF_SONGS] = {180, 144, 180, 190};
+const uint8_t PROGMEM song_speed[NUM_OF_SONGS] = {180, 144, 180, 190, 144, 144, 180, 100};
 
 #endif

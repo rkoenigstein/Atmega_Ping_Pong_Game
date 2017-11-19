@@ -5,9 +5,9 @@
 #include <stdbool.h>
 #include <avr/interrupt.h>
 
-#define Kp 0.7
+#define Kp 0.8
 #define Ki 0.1
-#define T 0.00102 //integral time in [ms] -> counter overflow
+#define T 0.016
 
 typedef struct
 {
@@ -62,5 +62,11 @@ void setMotorPosition(JOY_POS current_position);
 
 /* shoots a 50ms kick with the solenoid */
 void shoot(void);
+
+/* turn motor timer off if not needed */
+void motor_timer_off(void);
+
+/* turn motor timer on if needed */
+void motor_timer_on(void);
 
 #endif
