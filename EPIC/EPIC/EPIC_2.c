@@ -56,7 +56,7 @@ void main_init (void)
 	printf("INIT DONE\n");
 }
 
-//interrupt service routine for timer of IR sensor updating the score
+
 void updateScore(void)
 {
 	int val = 0;
