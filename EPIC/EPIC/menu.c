@@ -20,13 +20,9 @@ extern void song_merry_x_mas(void);
 extern void song_jingle_bells(void);
 extern void song_last_christmas(void);
 
-extern void calibrateLeftSlider(void);
-extern void calibrateRightSlider(void);
-extern void calibrateJoystick(void);
 extern void ping_pong_idle(void);
 extern void playPingPong(void);
 extern void irSettings(void);
-extern void printGreetings(void);
 extern void animations(void);
 
 static MenuNode* _menu;
@@ -34,7 +30,7 @@ static MenuNode* _menu;
 MenuNode* createMenuNode(uint8_t title_id, void (*operation)(void), uint8_t num_of_submenus)
 {
 	static uint16_t current_adress = 0x1C00;
-	
+
 	MenuNode* _mnode = (void *) current_adress;
 	current_adress += sizeof(MenuNode);
 
@@ -45,7 +41,7 @@ MenuNode* createMenuNode(uint8_t title_id, void (*operation)(void), uint8_t num_
 	_mnode->m_content.title_id = title_id;
 	//printf("title id: %d, memory addr: 0x%02x\n", title_id, current_adress - num_of_submenus * sizeof(MenuNode *));
 	_mnode->m_content.operation = operation;
-	
+
 	if(current_adress >= 0x1FFF)
 		printf("Menu out of memory\n");
 	return _mnode;
@@ -57,7 +53,7 @@ static void assignParents(MenuNode* node)
 	{
 		node->m_submenus[i]->m_parent = node;
 		assignParents(node->m_submenus[i]);
-	}	
+	}
 }
 
 MenuNode* getMenuRoot(void)
@@ -73,12 +69,8 @@ void createMenu(void)
 	_menu->m_submenus[0] = createMenuNode(1, NULL, 2);
 	_menu->m_submenus[0]->m_submenus[0] = createMenuNode(2, &playPingPong, 0);
 	_menu->m_submenus[0]->m_submenus[1] = createMenuNode(3, &ping_pong_idle, 0);
-	_menu->m_submenus[1] = createMenuNode(5, NULL, 3);
-	_menu->m_submenus[1]->m_submenus[0] = createMenuNode(8, &calibrateJoystick, 0);
-	_menu->m_submenus[1]->m_submenus[1] = createMenuNode(9, NULL, 2);
-	_menu->m_submenus[1]->m_submenus[1]->m_submenus[0] = createMenuNode(10, NULL, 0);
-	_menu->m_submenus[1]->m_submenus[1]->m_submenus[1] = createMenuNode(11, NULL, 0);
-	_menu->m_submenus[1]->m_submenus[2] = createMenuNode(35, &irSettings, 0);
+	_menu->m_submenus[1] = createMenuNode(5, NULL, 1);
+	_menu->m_submenus[1]->m_submenus[0] = createMenuNode(35, &irSettings, 0);
 	_menu->m_submenus[2] = createMenuNode(12, NULL, 8);
 	_menu->m_submenus[2]->m_submenus[0] = createMenuNode(13, &song_harry_potter, 0);
 	_menu->m_submenus[2]->m_submenus[1] = createMenuNode(14, &song_tetris, 0);

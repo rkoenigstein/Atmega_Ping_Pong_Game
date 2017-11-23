@@ -62,9 +62,6 @@ void print_string_to_buffer(char* word, position pos);
 /* test function flashing OLED and writing test output to the display */
 void oled_test(void);
 
-/* prints greetings to the display */
-void printGreetings(void);
-
 /* prints current menu entries on the OLED */
 void printMenu(MenuNode* menu_entries);
 

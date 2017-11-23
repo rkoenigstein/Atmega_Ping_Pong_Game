@@ -37,14 +37,6 @@ JOY_POS JOY_getPosition(void);
 /* returns the direction of the joystick */
 int JOY_getDirection(JOY_POS in);
 
-/* calibrates the joystick and stores the maximum and minimum value */
-void calibrateJoystick(void);
-
-/* calibrates the sliders and stores min and max values */
-void calibrateSlider(uint8_t which_slider);
-void calibrateLeftSlider(void);
-void calibrateRightSlider(void);
-
 /* returns the slider positions from the USB multifunction board*/
 SLID SLID_getPosition(void);
 

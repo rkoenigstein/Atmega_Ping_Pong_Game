@@ -154,23 +154,6 @@ void oled_test()
 	}*/
 }
 
-void printGreetings(void)
-{
-	clear_buffer();
-	char string[MAX_STRING_LENGTH];
-	position pos = { .page = 1, .column = 2 };
-	for(int i = 0; i < 4; i++)
-	{
-		for (uint8_t i = 0; i < MAX_STRING_LENGTH; i++)
-		string[i] = 0;
-		getStringFromMem(string, 39 + i);
-		print_string_to_buffer(string, pos);
-		pos.page++;
-	}	
-	print_buffer();
-	_delay_ms(4000);
-}
-
 void print_thumb(void)
 {
 	clear_buffer();
@@ -191,9 +174,9 @@ void print_thumb(void)
 void printMenu(MenuNode* menu_entries)
 {
 	char string[MAX_STRING_LENGTH];
-	
+
 	clear_buffer();
-	
+
 	for(int i = 0; i < menu_entries->m_num_submenus; i++)
 	{
 		//TODO check if num submenus < 8
